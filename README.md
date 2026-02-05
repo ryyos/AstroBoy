@@ -1,6 +1,6 @@
-<h1 align="center" >WELCOME TO AFTERRAIN</h1>
+<h1 align="center" >WELCOME TO ASTROBOY</h1>
 
-> AfterRain adalah sebuah aplikasi yang dikembangkan sebagai project akhir kelompok pada mata kuliah **Pemrograman Berorientasi Objek (PBO)**.  
+> ASTROBOY adalah sebuah aplikasi yang dikembangkan sebagai project akhir kelompok pada mata kuliah **Pemrograman Berorientasi Objek (PBO)**.  
 > Project ini bertujuan untuk menerapkan konsep-konsep utama OOP seperti **encapsulation, inheritance, polymorphism, dan abstraction** ke dalam sebuah aplikasi nyata yang terstruktur dan mudah dikembangkan.
 
 ## Tujuan Pengembangan
