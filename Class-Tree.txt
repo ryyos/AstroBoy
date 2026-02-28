@@ -1,0 +1,159 @@
+# ASTROBOY FILE STRUKTUR
+
+AstroBoy.sln
+│
+├── AstroBoy.App            ← UI
+│   ├── Platforms
+│   ├── Resources
+│   ├── Views
+│   ├── ViewModels
+│   ├── App.xaml
+│   ├── AppShell.xaml
+│   ├── MauiProgram.cs
+│   └── AstroBoy.App.csproj
+│
+├── AstroBoy.Domain         ← Logic
+│   ├── Common
+│   ├── Users
+│   ├── Catalog
+│   ├── Cart
+│   └── Orders
+│
+├── AstroBoy.Infrastructure ← SQLite
+│   ├── Persistence
+│   └── Repositories
+│
+└── AstroBoy.Tests          ← UnitTest
+
+
+# ASTROBOY CLASS STRUCTURE
+
+# BASE CLASSES
+Root (abstract)
+├─ Properties:
+│   • Guid Id { get; }
+│   • DateTime CreatedAtUtc { get; }
+│
+└─ Constructor:
+    • protected Entity(Guid? id = null)
+
+
+# USER
+User (sealed) : Root
+├─ Properties:
+│   • string Username { get; private set; }
+│   • string Password { get; private set; }
+│   • string DisplayName { get; private set; }
+│
+├─ Constructor:
+│   • User(string username, string password,
+│          string fullName, Guid? id = null)
+│
+└─ Methods:
+    • void ChangePassword(string newPassword)
+    • void Rename(string newDisplayName)
+    • bool Verify(string username, string password)
+
+
+# CATALOG DOMAIN
+Product (sealed) : Root
+├─ Properties:
+│   • string Name { get; private set; }
+│   • string Description { get; private set; }
+│   • Money Price { get; private set; }
+│   • string Unit { get; private set; }
+│   • int Stock { get; private set; }
+│
+├─ Constructor:
+│   • Product(string name, string description,
+│            Money price, string unit,
+│            int stock, Guid? id = null)
+│
+└─ Methods:
+    • void Rename(string name)
+    • void ChangeDescription(string description)
+    • void ChangePrice(Money newPrice)
+    • void IncreaseStock(int amount)
+    • void ReduceStock(int quantity)
+
+
+Money (sealed)
+├─ Properties:
+│   • decimal Amount { get; }
+│
+├─ Constructor:
+│   • Money(decimal amount)
+│
+├─ Methods:
+│   • Money Add(Money other)
+│   • Money Multiply(int quantity)
+│
+└─ Overrides:
+    • Equals(object obj)
+    • GetHashCode()
+
+
+# SHOPPING CART
+ShoppingCart (sealed) : Root
+├─ Field:
+│   • readonly List<Item> _items
+│
+├─ Properties:
+│   • Guid UserId { get; }
+│   • IReadOnlyList<Item> Items { get; }
+│   • Money TotalAmount { get; }
+│
+├─ Constructor:
+│   • ShoppingCart(Guid userId, Guid? id = null)
+│
+└─ Methods:
+    • void AddProduct(Product product, int quantity)
+    • void RemoveItem(Guid productId)
+    • void ChangeQuantity(Guid productId, int quantity)
+    • void Clear()
+    • Order Checkout()
+
+
+Item (sealed)
+├─ Properties:
+│   • Guid ProductId { get; }
+│   • string ProductName { get; }
+│   • Money UnitPrice { get; }
+│   • int Quantity { get; private set; }
+│   • Money LineTotal { get; }
+│
+├─ Constructor:
+│   • Item(Guid productId,
+│              string productName,
+│              Money unitPrice,
+│              int quantity)
+│
+└─ Methods:
+    • void ChangeQuantity(int quantity)
+
+
+# ORDER DOMAIN
+Order (sealed) : Root
+├─ Field:
+│   • readonly List<Item> _items
+│
+├─ Properties:
+│   • Guid UserId { get; }
+│   • OrderStatus Status { get; private set; }
+│   • IReadOnlyList<Item> Items { get; }
+│   • Money TotalAmount { get; }
+│
+├─ Constructor:
+│   • Order(Guid userId,
+│          IEnumerable<Item> items,
+│          Guid? id = null)
+│
+└─ Methods:
+    • void Confirm()
+    • void Cancel()
+
+
+OrderStatus (enum)
+├─ Pending
+├─ Confirmed
+└─ Cancelled
