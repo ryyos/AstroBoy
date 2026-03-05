@@ -1,5 +1,6 @@
 <br>
 <h1 align="center" >ASTROBOY FILE STRUKTUR</h1>
+<br>
 
 ```
 AstroBoy
@@ -68,6 +69,7 @@ AstroBoy
 
 <br>
 <h1 align="center" >ASTROBOY CLASS STRUKTUR</h1>
+<br>
 
 ```
 User (abstract)
