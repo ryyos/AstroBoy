@@ -60,8 +60,6 @@ AstroBoy
 ├── Database/
 │   └── DatabaseContext.cs     ← SQLite
 │
-├── DTO/                      ← opsional
-│   └── DTO*.cs
 │
 └── Utils/
     └── *
@@ -74,10 +72,10 @@ AstroBoy
 ```
 User (abstract)
 ├─ Properties
-│  ├─ Id
-│  ├─ Name
-│  ├─ Email
-│  └─ Password
+│  ├─ Id: str
+│  ├─ Name: str
+│  ├─ Email: str
+│  └─ Password: str
 │
 ├─ Methods
 │  ├─ Login()
@@ -88,9 +86,9 @@ User (abstract)
 │
 ├── Staff (abstract) : User
 │   ├─ Properties
-│   │  ├─ StaffId
-│   │  ├─ HireDate
-│   │  └─ IsActive
+│   │  ├─ StaffId: str
+│   │  ├─ HireDate: str
+│   │  └─ IsActive: bool
 │   │
 │   ├─ Methods
 │   │  └─ ViewDashboard()
@@ -147,11 +145,11 @@ User (abstract)
 
 Store
 ├─ Properties
-│  ├─ Id
-│  ├─ Name
-│  ├─ Address
-│  ├─ Phone
-│  ├─ OwnerId
+│  ├─ Id: str
+│  ├─ Name: str
+│  ├─ Address: str
+│  ├─ Phone: int
+│  ├─ OwnerId: str
 │  ├─ List<Item> Items
 │  └─ List<Order> Orders
 │
@@ -170,12 +168,12 @@ Store
 
 Item
 ├─ Properties
-│  ├─ Id
-│  ├─ Name
-│  ├─ Price
-│  ├─ Stock
-│  ├─ Category
-│  └─ StoreId
+│  ├─ Id: str
+│  ├─ Name: str
+│  ├─ Price: float
+│  ├─ Stock: int
+│  ├─ Category: str
+│  └─ StoreId: str
 │
 └─ Methods
    ├─ UpdateStock(quantity)
@@ -186,8 +184,8 @@ Item
 
 ItemCart
 ├─ Properties
-│  ├─ ItemId
-│  └─ Quantity
+│  ├─ ItemId: str
+│  └─ Quantity: int
 │
 └─ Methods
    └─ UpdateQuantity(qty)
@@ -195,8 +193,8 @@ ItemCart
 
 ShoppingCart
 ├─ Properties
-│  ├─ Id
-│  ├─ CustomerId
+│  ├─ Id: str
+│  ├─ CustomerId: str
 │  └─ List<ItemCart> Items
 │
 └─ Methods
@@ -214,11 +212,11 @@ ShoppingCart
 
 Order
 ├─ Properties
-│  ├─ Id
-│  ├─ CustomerId
-│  ├─ StoreId
-│  ├─ CreatedAt
-│  ├─ Status
+│  ├─ Id: str
+│  ├─ CustomerId: str
+│  ├─ StoreId: str
+│  ├─ CreatedAt: str
+│  ├─ Status: str
 │  └─ List<OrderItem> Items
 │
 └─ Methods
@@ -231,12 +229,30 @@ Order
    └─ CompleteOrder()
        → Status = "Completed"
 
+Payment
+├─ Properties
+│  ├─ Id: str
+│  ├─ OrderId: str
+│  ├─ Amount: str
+│  ├─ Method: str
+│  ├─ Status: str
+│  └─ PaidAt: str
+│
+└─ Methods
+   ├─ Pay(method)
+   │   → Method()
+   │   → Status()
+   │   → PaidAt()
+   │
+   └─ MarkAsFailed()
+       → Status = "Failed"
+
 OrderItem
 ├─ Properties
-│  ├─ ItemId
-│  ├─ ItemName
-│  ├─ UnitPrice
-│  └─ Quantity
+│  ├─ ItemId: str
+│  ├─ ItemName: str
+│  ├─ UnitPrice: int
+│  └─ Quantity: int
 │
 └─ Methods
    └─ GetSubtotal()
@@ -256,7 +272,7 @@ SQLiteStorage : IStorage
    ├─ Load → [SELECT SQLite]
    └─ Delete → [DELETE SQLite]
 
-FileStorageStrategy : IStorageStrategy
+FileStorage : IStorage
 └─ Responsibility
    ├─ Save → serialize object ke file
    ├─ Load → deserialize dari file
