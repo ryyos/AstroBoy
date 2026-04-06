@@ -108,7 +108,7 @@ User (abstract)
 │   │      └─ ViewSalesReport(storeId)
 │   │          → [DB Store]
 │   │
-│   └── StoreOwner : Staff
+│   └── Owner : Staff
 │       ├─ Properties
 │       │  └─ List<Store> Stores
 │       │

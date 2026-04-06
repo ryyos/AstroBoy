@@ -7,13 +7,11 @@ public class Item
     public required string Category { get; set; }
     public required string StoreId { get; set; }
 
-    // Methods
-    public void UpdateStock(int quantity)
+    public void UpdateStock()
     {
-        Stock = Stock + quantity;
     }
-    public void ChangePrice(float newPrice)
+
+    public void ChangePrice()
     {
-        Price = newPrice;
     }
 }

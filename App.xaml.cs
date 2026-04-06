@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AstroBoy.Views.Auth;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AstroBoy
 {
@@ -7,11 +8,7 @@ namespace AstroBoy
         public App()
         {
             InitializeComponent();
-        }
-
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new AppShell());
+            MainPage = new NavigationPage(new LoginPage());
         }
     }
 }
