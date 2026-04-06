@@ -1,0 +1,27 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AstroBoy.Views.Auth.LoginPage">
+
+    <VerticalStackLayout Padding="24" Spacing="16">
+
+        <Label Text="AstroBoy Login"
+               FontSize="24"
+               FontAttributes="Bold" />
+
+        <Entry Placeholder="Username"
+               Text="{Binding Username}" />
+
+        <Entry Placeholder="Password"
+               IsPassword="True"
+               Text="{Binding Password}" />
+
+        <Button Text="Login"
+                Command="{Binding LoginCommand}" />
+
+        <Label Text="{Binding ErrorMessage}"
+               TextColor="Red"
+               FontSize="12"/>
+
+    </VerticalStackLayout>
+
+</ContentPage>
