@@ -7,11 +7,12 @@ public class AuthService
     public User Login(string username, string password)
     {
         if (username == "admin" && password == "123")
-            return new Admin(username, username, password);
+            // role ntar dapet dari database
+            return new Admin(username, username, password, "admin");
 
         if (username == "owner" && password == "123")
-            return new Owner(username, username, password);
+            return new Owner(username, username, password, "owner");
 
-        return new Customer(username, username, password);
+        return new Customer(username, username, password, "customer");
     }
 }

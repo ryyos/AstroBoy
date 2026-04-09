@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace AstroBoy.ViewModels;
+namespace AstroBoy.ViewModels.Base;
 
 public class BaseViewModel : INotifyPropertyChanged
 {

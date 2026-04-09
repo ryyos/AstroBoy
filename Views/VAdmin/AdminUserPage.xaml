@@ -1,0 +1,46 @@
+<ContentPage
+    x:Class="AstroBoy.Views.VAdmin.AdminUserPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Manage Users">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Label Text="User Management"
+               FontSize="24"
+               FontAttributes="Bold"/>
+
+        <Button Text="Add User" />
+
+        <CollectionView ItemsSource="{Binding Users}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <Frame Padding="10" Margin="0,5">
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Name}"
+                                       TextColor="Black"
+                                       FontAttributes="Bold"/>
+                                
+                                <Label Text="{Binding Role}" 
+                                       TextColor="Black"/>
+                            </VerticalStackLayout>
+
+                            <HorizontalStackLayout Grid.Column="1" Spacing="10">
+                                <Button Text="Edit"/>
+                                <Button Text="Delete"
+                                        BackgroundColor="Red"
+                                        TextColor="White"/>
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Frame>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>

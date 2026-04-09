@@ -1,4 +1,4 @@
-using AstroBoy.ViewModels;
+using AstroBoy.ViewModels.Auth;
 
 namespace AstroBoy.Views.Auth;
 
