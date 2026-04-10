@@ -11,7 +11,13 @@ public class AuthService
             return new Admin(username, username, password, "admin");
 
         if (username == "owner" && password == "123")
-            return new Owner(username, username, password, "owner");
+        {
+            var owner = new Owner(username, username, password, "owner")
+            {
+                Balance = 2_500_000
+            };
+            return owner;
+        }
 
         return new Customer(username, username, password, "customer");
     }
