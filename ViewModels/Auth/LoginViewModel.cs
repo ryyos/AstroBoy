@@ -3,7 +3,6 @@ using AstroBoy.Services;
 using AstroBoy.Views.Owner;
 using AstroBoy.Views.VCustomer;
 using AstroBoy.ViewModels.Base;
-using OwnerUser = AstroBoy.Models.Owner;
 
 using AdminUser = AstroBoy.Models.Admin;
 using OwnerUser = AstroBoy.Models.Owner;
