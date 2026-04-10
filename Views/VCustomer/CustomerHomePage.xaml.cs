@@ -1,4 +1,4 @@
-namespace AstroBoy.Views.Customer;
+namespace AstroBoy.Views.VCustomer;
 
 public partial class CustomerHomePage : ContentPage
 {
