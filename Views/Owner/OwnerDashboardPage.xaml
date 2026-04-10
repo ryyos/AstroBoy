@@ -1,9 +1,56 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="AstroBoy.Views.Owner.OwnerDashboardPage">
+             x:Class="AstroBoy.Views.Owner.OwnerDashboardPage"
+             Title="Owner Dashboard">
 
-    <VerticalStackLayout>
-        <Label Text="Customer Owner" />
+    <VerticalStackLayout Padding="16" Spacing="12">
+
+        <Label Text="{Binding WelcomeMessage}"
+               FontSize="20"
+               FontAttributes="Bold" />
+
+        <Border Padding="16" StrokeShape="RoundRectangle 12" BackgroundColor="#EEF6FF">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Saldo Anda"
+                       FontSize="13"
+                       TextColor="Gray" />
+                <Label Text="{Binding BalanceFormatted}"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       TextColor="#1A73E8" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Label Text="Toko Anda"
+               FontSize="16"
+               TextColor="Gray" />
+
+        <CollectionView ItemsSource="{Binding Stores}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnStoreSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="12" Margin="0,4" StrokeShape="RoundRectangle 8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="{Binding Name}"
+                                       FontAttributes="Bold"
+                                       FontSize="16" />
+                                <Label Text="{Binding Address}"
+                                       FontSize="13"
+                                       TextColor="Gray" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1"
+                                   Text="›"
+                                   FontSize="24"
+                                   VerticalOptions="Center"
+                                   TextColor="Gray" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
     </VerticalStackLayout>
 
 </ContentPage>

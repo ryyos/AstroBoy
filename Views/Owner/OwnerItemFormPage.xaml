@@ -1,0 +1,34 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AstroBoy.Views.Owner.OwnerItemFormPage"
+             Title="{Binding Title}">
+
+    <VerticalStackLayout Padding="16" Spacing="12">
+
+        <Label Text="Nama Item" />
+        <Entry Text="{Binding Name}" Placeholder="Contoh: Laptop ASUS" />
+
+        <Label Text="Harga (Rp)" />
+        <Entry Text="{Binding PriceText}"
+               Placeholder="Contoh: 8500000"
+               Keyboard="Numeric" />
+
+        <Label Text="Stok" />
+        <Entry Text="{Binding StockText}"
+               Placeholder="Contoh: 10"
+               Keyboard="Numeric" />
+
+        <Label Text="Kategori" />
+        <Entry Text="{Binding Category}" Placeholder="Contoh: Elektronik" />
+
+        <Label Text="{Binding ErrorMessage}"
+               TextColor="Red"
+               IsVisible="{Binding HasError}" />
+
+        <Button Text="Simpan"
+                Command="{Binding SaveCommand}"
+                Margin="0,8,0,0" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

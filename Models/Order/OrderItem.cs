@@ -1,3 +1,5 @@
+namespace AstroBoy.Models;
+
 public class OrderItem
 {
     public required string ItemId { get; set; }
@@ -5,8 +7,5 @@ public class OrderItem
     public required int UnitPrice { get; set; }
     public required int Quantity { get; set; }
 
-    public void GetSubtotal()
-    {
-
-    }
+    public int GetSubtotal() => UnitPrice * Quantity;
 }
