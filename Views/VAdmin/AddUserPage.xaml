@@ -1,0 +1,17 @@
+<ContentPage
+    x:Class="AstroBoy.Views.VAdmin.AddUserPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Add User">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Entry Placeholder="Name" Text="{Binding Name}" />
+        <Entry Placeholder="Email" Text="{Binding Email}" />
+        <Entry Placeholder="Password" IsPassword="True" Text="{Binding Password}" />
+
+        <Button Text="Save" Command="{Binding SaveCommand}" />
+        <Button Text="Cancel" Clicked="OnCancelClicked"/>
+
+    </VerticalStackLayout>
+</ContentPage>

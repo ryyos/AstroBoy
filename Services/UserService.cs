@@ -13,6 +13,10 @@ namespace AstroBoy.Services
             return 67;
         }
 
+        public void AddUser(User user)
+        {
+        }
+
         public List<User> GetAllUsers()
         {
             return new List<User> {

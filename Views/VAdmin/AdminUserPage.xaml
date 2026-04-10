@@ -10,7 +10,7 @@
                FontSize="24"
                FontAttributes="Bold"/>
 
-        <Button Text="Add User" />
+        <Button Text="Add User" Clicked="OnAddUserClicked"/>
 
         <CollectionView ItemsSource="{Binding Users}">
             <CollectionView.ItemTemplate>

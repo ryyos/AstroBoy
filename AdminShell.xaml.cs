@@ -1,8 +1,8 @@
 ﻿namespace AstroBoy
 {
-    public partial class AppShell : Shell
+    public partial class AdminShell : Shell
     {
-        public AppShell()
+        public AdminShell()
         {
             InitializeComponent();
         }

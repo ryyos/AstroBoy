@@ -1,10 +1,12 @@
 using System.Windows.Input;
 using AstroBoy.Services;
-using AstroBoy.Models;
-using AstroBoy.Views.VAdmin;
 using AstroBoy.Views.Owner;
 using AstroBoy.Views.Customer;
 using AstroBoy.ViewModels.Base;
+
+using AdminUser = AstroBoy.Models.Admin;
+using OwnerUser = AstroBoy.Models.Owner;
+using CustomerUser = AstroBoy.Models.Customer;
 
 namespace AstroBoy.ViewModels.Auth;
 
@@ -35,16 +37,15 @@ public class LoginViewModel : BaseViewModel
             return;
         }
 
-        if (user is Admin)
+        if (user is AdminUser)
         {
-            Application.Current.MainPage = new AppShell();
-            //await Application.Current.MainPage.Navigation.PushAsync(new AdminDashboardPage());
+            Application.Current.MainPage = new AdminShell();
         }
-        else if (user is Owner)
+        else if (user is OwnerUser)
         {
             await Application.Current.MainPage.Navigation.PushAsync(new OwnerDashboardPage());
         }
-        else if (user is Customer)
+        else if (user is CustomerUser)
         {
             await Application.Current.MainPage.Navigation.PushAsync(new CustomerHomePage());
         }

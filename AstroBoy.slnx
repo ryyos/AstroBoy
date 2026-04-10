@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="AstroBoy.csproj" />
+  <Project Path="AstroBoy.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>

@@ -9,4 +9,9 @@ public partial class AdminUserPage : ContentPage
 		InitializeComponent();
         BindingContext = new AdminUsersViewModel();
     }
+
+    private async void OnAddUserClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new AddUserPage());
+    }
 }

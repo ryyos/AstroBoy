@@ -1,3 +1,5 @@
+using AstroBoy.Utils;
+
 namespace AstroBoy.Models;
 
 public abstract class User
@@ -13,7 +15,7 @@ public abstract class User
         this.Name = name;
         this.Email = email;
         this.Password = password;
-        this.Id = Email;
+        this.Id = Encrypts.Md5Hash(name + email);
         Role = role;
     }
 }

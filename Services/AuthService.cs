@@ -15,4 +15,4 @@ public class AuthService
 
         return new Customer(username, username, password, "customer");
     }
-}
+} 
