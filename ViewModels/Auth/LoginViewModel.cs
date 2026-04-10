@@ -3,7 +3,7 @@ using AstroBoy.Services;
 using AstroBoy.Models;
 using AstroBoy.Views.VAdmin;
 using AstroBoy.Views.Owner;
-using AstroBoy.Views.Customer;
+using AstroBoy.Views.VCustomer;
 using AstroBoy.ViewModels.Base;
 
 namespace AstroBoy.ViewModels.Auth;
@@ -44,9 +44,10 @@ public class LoginViewModel : BaseViewModel
         {
             await Application.Current.MainPage.Navigation.PushAsync(new OwnerDashboardPage());
         }
-        else if (user is Customer)
+        else if (user is AstroBoy.Models.Customer)
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new CustomerHomePage());
+            // Arahkan ke Shell khusus Customer
+            Application.Current!.MainPage = new CustomerAppShell();
         }
     }
 }
