@@ -5,6 +5,7 @@ using AstroBoy.Views.VAdmin;
 using AstroBoy.Views.Owner;
 using AstroBoy.Views.VCustomer;
 using AstroBoy.ViewModels.Base;
+using OwnerUser = AstroBoy.Models.Owner;
 
 namespace AstroBoy.ViewModels.Auth;
 
@@ -40,9 +41,9 @@ public class LoginViewModel : BaseViewModel
             Application.Current.MainPage = new AppShell();
             //await Application.Current.MainPage.Navigation.PushAsync(new AdminDashboardPage());
         }
-        else if (user is Owner)
+        else if (user is OwnerUser owner)
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new OwnerDashboardPage());
+            await Application.Current.MainPage.Navigation.PushAsync(new OwnerDashboardPage(owner));
         }
         else if (user is AstroBoy.Models.Customer)
         {

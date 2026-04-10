@@ -1,3 +1,5 @@
+namespace AstroBoy.Models;
+
 public class Item
 {
     public Guid Id { get; set; }
@@ -6,12 +8,4 @@ public class Item
     public required int Stock { get; set; }
     public required string Category { get; set; }
     public required string StoreId { get; set; }
-
-    public void UpdateStock()
-    {
-    }
-
-    public void ChangePrice()
-    {
-    }
 }

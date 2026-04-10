@@ -1,0 +1,36 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AstroBoy.Views.Owner.OwnerStoreDetailPage"
+             Title="{Binding Store.Name}">
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout Grid.Row="0" Padding="16,16,16,8" Spacing="4">
+            <Label Text="{Binding Store.Address}" TextColor="Gray" FontSize="13" />
+            <Label Text="{Binding Store.Phone}" TextColor="Gray" FontSize="13" />
+            <Button Text="+ Tambah Item" Clicked="OnAddItemClicked" HorizontalOptions="Start" Margin="0,8,0,0" />
+        </VerticalStackLayout>
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Items}" Margin="16,0">
+            <CollectionView.EmptyView>
+                <Label Text="Belum ada item." HorizontalOptions="Center" TextColor="Gray" Margin="0,32" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Padding="12" Margin="0,4" StrokeShape="RoundRectangle 8">
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="15" />
+                                <Label Text="{Binding Price, StringFormat='Rp {0:N0}'}" FontSize="13" />
+                                <Label Text="{Binding Stock, StringFormat='Stok: {0}'}" FontSize="13" TextColor="Gray" />
+                                <Label Text="{Binding Category}" FontSize="12" TextColor="Gray" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="Edit" VerticalOptions="Center" Margin="4,0"
+                                    Clicked="OnEditItemClicked" CommandParameter="{Binding .}" />
+                            <Button Grid.Column="2" Text="Hapus" VerticalOptions="Center"
+                                    BackgroundColor="#E74C3C" TextColor="White"
+                                    Clicked="OnDeleteItemClicked" CommandParameter="{Binding .}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
