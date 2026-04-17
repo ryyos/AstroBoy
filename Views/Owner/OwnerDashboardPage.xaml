@@ -25,26 +25,41 @@
                FontSize="16"
                TextColor="Gray" />
 
-        <CollectionView ItemsSource="{Binding Stores}"
-                        SelectionMode="Single"
-                        SelectionChanged="OnStoreSelected">
+        <Button Text="+ Tambah Toko"
+                Clicked="OnAddStoreClicked"
+                HorizontalOptions="Start" />
+
+        <CollectionView ItemsSource="{Binding Stores}">
+            <CollectionView.EmptyView>
+                <Label Text="Belum ada toko. Tambahkan toko pertama Anda!"
+                       HorizontalOptions="Center"
+                       TextColor="Gray"
+                       Margin="0,32" />
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Padding="12" Margin="0,4" StrokeShape="RoundRectangle 8">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto,Auto" RowSpacing="8">
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Spacing="4">
+                                <VerticalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnStoreTapped"
+                                                          CommandParameter="{Binding .}" />
+                                </VerticalStackLayout.GestureRecognizers>
                                 <Label Text="{Binding Name}"
                                        FontAttributes="Bold"
                                        FontSize="16" />
                                 <Label Text="{Binding Address}"
                                        FontSize="13"
                                        TextColor="Gray" />
+                                <Label Text="{Binding Phone}"
+                                       FontSize="13"
+                                       TextColor="Gray" />
                             </VerticalStackLayout>
-                            <Label Grid.Column="1"
-                                   Text="›"
-                                   FontSize="24"
-                                   VerticalOptions="Center"
-                                   TextColor="Gray" />
+                            <Button Grid.Row="1" Grid.Column="1" Text="Edit" VerticalOptions="Center" Margin="4,0"
+                                    Clicked="OnEditStoreClicked" CommandParameter="{Binding .}" />
+                            <Button Grid.Row="1" Grid.Column="2" Text="Hapus" VerticalOptions="Center"
+                                    BackgroundColor="#E74C3C" TextColor="White"
+                                    Clicked="OnDeleteStoreClicked" CommandParameter="{Binding .}" />
                         </Grid>
                     </Border>
                 </DataTemplate>

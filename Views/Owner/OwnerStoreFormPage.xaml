@@ -1,0 +1,29 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AstroBoy.Views.Owner.OwnerStoreFormPage"
+             Title="{Binding Title}">
+
+    <VerticalStackLayout Padding="16" Spacing="12">
+
+        <Label Text="Nama Toko" />
+        <Entry Text="{Binding Name}" Placeholder="Contoh: Toko Elektronik Jaya" />
+
+        <Label Text="Alamat" />
+        <Entry Text="{Binding Address}" Placeholder="Contoh: Jl. Sudirman No.1" />
+
+        <Label Text="Nomor Telepon" />
+        <Entry Text="{Binding Phone}"
+               Placeholder="Contoh: 08123456789"
+               Keyboard="Telephone" />
+
+        <Label Text="{Binding ErrorMessage}"
+               TextColor="Red"
+               IsVisible="{Binding HasError}" />
+
+        <Button Text="Simpan"
+                Command="{Binding SaveCommand}"
+                Margin="0,8,0,0" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

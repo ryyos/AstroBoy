@@ -23,8 +23,7 @@ namespace AstroBoy.ViewModels.AdminViewModel
 
         public void LoadData()
         {
-            var data = _service.GetAll()
-                               .Where(s => s.OwnerId == OwnerId);
+            var data = _service.GetStoresByOwner(OwnerId.ToString());
 
             Stores.Clear();
             foreach (var item in data)

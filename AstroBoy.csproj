@@ -86,6 +86,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\Owner\OwnerStoreFormPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\VAdmin\AdminOwnerList.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
