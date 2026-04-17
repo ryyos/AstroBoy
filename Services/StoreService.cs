@@ -66,8 +66,20 @@ public class StoreService
         if (item != null) store!.Items.Remove(item);
     }
 
-    public List<Store> GetAll()
+    public void AddStore(Store store) => _stores.Add(store);
+
+    public void UpdateStore(Store updatedStore)
     {
-        return _stores;
+        var store = _stores.FirstOrDefault(s => s.StoreId == updatedStore.StoreId);
+        if (store == null) return;
+        store.Name = updatedStore.Name;
+        store.Address = updatedStore.Address;
+        store.Phone = updatedStore.Phone;
+    }
+
+    public void DeleteStore(string storeId)
+    {
+        var store = _stores.FirstOrDefault(s => s.StoreId == storeId);
+        if (store != null) _stores.Remove(store);
     }
 }
