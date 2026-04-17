@@ -1,13 +1,13 @@
-using AstroBoy.ViewModels.Admin;
+using AstroBoy.ViewModels.AdminViewModel;
 
 namespace AstroBoy.Views.VAdmin;
 
-public partial class AddUserPage : ContentPage
+public partial class AddCustomerPage : ContentPage
 {
-    public AddUserPage()
+    public AddCustomerPage()
     {
         InitializeComponent();
-        BindingContext = new AddUserViewModel();
+        BindingContext = new AddCustomerViewModel();
     }
 
     private async void OnCancelClicked(object sender, EventArgs e)
@@ -17,6 +17,6 @@ public partial class AddUserPage : ContentPage
 
     private async void OnAddUserClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new AddUserPage());
+        await Navigation.PushAsync(new AddCustomerPage());
     }
 }

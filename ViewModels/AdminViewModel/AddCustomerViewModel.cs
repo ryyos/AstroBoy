@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 using AstroBoy.Models;
 using AstroBoy.Services;
 using AstroBoy.ViewModels.Base;
 
-namespace AstroBoy.ViewModels.Admin
+namespace AstroBoy.ViewModels.AdminViewModel
 {
-    public class AddUserViewModel : BaseViewModel
+    public class AddCustomerViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
+        private readonly CustomerService _customerService;
 
         public string Name { get; set; }
         public string Email { get; set; }
@@ -18,15 +17,15 @@ namespace AstroBoy.ViewModels.Admin
 
         public Command SaveCommand { get; }
 
-        public AddUserViewModel()
+        public AddCustomerViewModel()
         {
-            _userService = new UserService();
+            _customerService = new CustomerService();
             SaveCommand = new Command(OnSave);
         }
 
         private async void OnSave()
         {
-            var newUser = new Customer
+            var newCustomer = new Customer
             (
                 name: Name,
                 email: Email,
@@ -34,7 +33,7 @@ namespace AstroBoy.ViewModels.Admin
                 role: "Customer"
             );
 
-            _userService.AddUser(newUser);
+            _customerService.AddCustomer(newCustomer);
 
             await Application.Current.MainPage.Navigation.PopAsync();
         }

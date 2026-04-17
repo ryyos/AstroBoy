@@ -3,7 +3,7 @@ using AstroBoy.Services;
 using AstroBoy.ViewModels.Base;
 using OwnerUser = AstroBoy.Models.Owner;
 
-namespace AstroBoy.ViewModels.Owner;
+namespace AstroBoy.ViewModels.OwnerViewModel;
 
 public class OwnerDashboardViewModel : BaseViewModel
 {

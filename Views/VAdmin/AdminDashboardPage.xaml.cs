@@ -1,4 +1,4 @@
-using AstroBoy.ViewModels.VAdmin;
+using AstroBoy.ViewModels.AdminViewModel;
 
 namespace AstroBoy.Views.VAdmin;
 

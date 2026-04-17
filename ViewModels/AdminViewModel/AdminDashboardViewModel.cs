@@ -4,23 +4,23 @@ using System.Text;
 using AstroBoy.Services;
 using AstroBoy.ViewModels.Base;
 
-namespace AstroBoy.ViewModels.VAdmin
+namespace AstroBoy.ViewModels.AdminViewModel
 {
     public class AdminDashboardViewModel : BaseViewModel
     {
-        private readonly UserService _userService;
+        private readonly CustomerService _customerService;
         private readonly StoreService _storeService;
         private readonly OrderService _orderService;
         private readonly ItemService _itemService;
 
-        public int TotalUsers { get; set; }
+        public int TotalCustomers { get; set; }
         public int TotalStores { get; set; }
         public int TotalOrders { get; set; }
         public int TotalItems { get; set; }
 
         public AdminDashboardViewModel()
         {
-            _userService = new UserService();
+            _customerService = new CustomerService();
             _storeService = new StoreService();
             _orderService = new OrderService();
             _itemService = new ItemService();
@@ -30,8 +30,8 @@ namespace AstroBoy.ViewModels.VAdmin
 
         private void LoadData()
         {
-            TotalUsers = _userService.GetTotalUsers();
-            TotalStores = _storeService.GetTotalStores();
+            TotalCustomers = _customerService.GetTotalCustomers();
+            TotalStores = _storeService.GetTotalStores();       
             TotalOrders = _orderService.GetTotalOrders();
             TotalItems = _itemService.GetTotalItems();
         }

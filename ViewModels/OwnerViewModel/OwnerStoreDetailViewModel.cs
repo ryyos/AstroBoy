@@ -3,7 +3,7 @@ using AstroBoy.Models;
 using AstroBoy.Services;
 using AstroBoy.ViewModels.Base;
 
-namespace AstroBoy.ViewModels.Owner;
+namespace AstroBoy.ViewModels.OwnerViewModel;
 
 public class OwnerStoreDetailViewModel : BaseViewModel
 {

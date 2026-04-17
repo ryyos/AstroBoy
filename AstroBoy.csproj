@@ -71,6 +71,30 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="AdminShell.xaml.cs">
+	    <DependentUpon>AdminShell.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\VAdmin\AddCustomerPage.xaml.cs">
+	    <DependentUpon>AddCustomerPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\VAdmin\AdminCustomerPage.xaml.cs">
+	    <DependentUpon>AdminCustomerPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\VAdmin\AdminOwnerStoresPage.xaml.cs">
+	    <DependentUpon>AdminOwnerStoresPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\VAdmin\AdminOwnerList.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\VAdmin\EditCustomerPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\VAdmin\AdminOwnerStoresPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\VCustomer\CartPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -84,13 +108,18 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\VCustomer\StorePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Owner\OwnerItemFormPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Owner\OwnerStoreDetailPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\VAdmin\AdminUserPage.xaml">
+	  <MauiXaml Update="Views\VAdmin\AddCustomerPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\VAdmin\AdminCustomerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

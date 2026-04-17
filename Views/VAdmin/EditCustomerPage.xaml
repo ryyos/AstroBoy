@@ -1,0 +1,13 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AstroBoy.Views.VAdmin.EditCustomerPage">
+
+    <VerticalStackLayout Padding="20">
+        <Entry Text="{Binding Customer.Name}" Placeholder="Name" />
+        <Entry Text="{Binding Customer.Email}" Placeholder="Email" />
+
+        <Button Text="Save"
+                Command="{Binding SaveCommand}" />
+    </VerticalStackLayout>
+
+</ContentPage>

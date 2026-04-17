@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AstroBoy.ViewModels.VAdmin
+namespace AstroBoy.ViewModels.AdminViewModel
 {
     internal class AdminOrdersViewModel
     {

@@ -13,7 +13,13 @@
     <FlyoutItem Title="Users">
         <ShellContent
             Title="Manage Users"
-            ContentTemplate="{DataTemplate views:AdminUserPage}" />
+            ContentTemplate="{DataTemplate views:AdminCustomerPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Owners">
+        <ShellContent 
+        Title="Owner List"
+        ContentTemplate="{DataTemplate views:AdminOwnerList}" />
     </FlyoutItem>
 
 </Shell>

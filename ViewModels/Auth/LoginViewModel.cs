@@ -4,9 +4,9 @@ using AstroBoy.Views.Owner;
 using AstroBoy.Views.VCustomer;
 using AstroBoy.ViewModels.Base;
 
-using AdminUser = AstroBoy.Models.Admin;
-using OwnerUser = AstroBoy.Models.Owner;
-using CustomerUser = AstroBoy.Models.Customer;
+using AdminModel = AstroBoy.Models.Admin;
+using OwnerModel = AstroBoy.Models.Owner;
+using CustomerModel = AstroBoy.Models.Customer;
 
 namespace AstroBoy.ViewModels.Auth;
 
@@ -37,15 +37,15 @@ public class LoginViewModel : BaseViewModel
             return;
         }
 
-        if (user is AdminUser)
+        if (user is AdminModel)
         {
             Application.Current.MainPage = new AdminShell();
         }
-        else if (user is OwnerUser owner)
+        else if (user is OwnerModel owner)
         {
             await Application.Current.MainPage.Navigation.PushAsync(new OwnerDashboardPage(owner));
         }
-        else if (user is CustomerUser)
+        else if (user is CustomerModel)
         {
             // Arahkan ke Shell khusus Customer
             Application.Current!.MainPage = new CustomerAppShell();

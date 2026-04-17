@@ -1,5 +1,5 @@
 using AstroBoy.Models;
-using AstroBoy.ViewModels.Owner;
+using AstroBoy.ViewModels.OwnerViewModel;
 using OwnerUser = AstroBoy.Models.Owner;
 
 namespace AstroBoy.Views.Owner;

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AstroBoy.ViewModels.VAdmin
+namespace AstroBoy.ViewModels.CustomerViewModel
 {
-    internal class AdminStoresViewModel
+    internal class ProfileViewModel
     {
     }
 }
