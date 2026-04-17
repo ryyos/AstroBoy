@@ -1,6 +1,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:AstroBoy.ViewModels.AdminViewModel"
+             x:Name="PageRoot"
              x:Class="AstroBoy.Views.VAdmin.AdminOwnerList">
 
     <CollectionView ItemsSource="{Binding Owners}">
@@ -13,8 +14,8 @@
                         <Label Text="{Binding Email}" FontSize="12" TextColor="Black"/>
 
                         <Button Text="View Stores"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminOwnerListViewModel}}, Path=ViewStoresCommand}"
-                                CommandParameter="{Binding .}" />
+                            Command="{Binding BindingContext.ViewStoresCommand, Source={x:Reference PageRoot}}"
+                            CommandParameter="{Binding .}" />
 
                     </VerticalStackLayout>
                 </Frame>

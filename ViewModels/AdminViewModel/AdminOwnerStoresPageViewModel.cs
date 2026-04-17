@@ -12,7 +12,7 @@ namespace AstroBoy.ViewModels.AdminViewModel
     {
         private readonly StoreService _service;
 
-        public int OwnerId { get; set; }
+        public string OwnerId { get; set; }
         public ObservableCollection<Store> Stores { get; set; }
 
         public AdminOwnerStoresViewModel()
