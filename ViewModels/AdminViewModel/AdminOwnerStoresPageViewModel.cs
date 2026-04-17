@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Windows.Input;
 using AstroBoy.Models;
 using AstroBoy.Services;
+using AstroBoy.Views.VAdmin;
 
 namespace AstroBoy.ViewModels.AdminViewModel
 {
@@ -14,6 +16,11 @@ namespace AstroBoy.ViewModels.AdminViewModel
 
         public string OwnerId { get; set; }
         public ObservableCollection<Store> Stores { get; set; }
+
+        public ICommand ViewItemsCommand => new Command<Store>(async (store) =>
+        {
+            await Shell.Current.GoToAsync($"{nameof(AdminStoreItemsPage)}?StoreId={store.StoreId}");
+        });
 
         public AdminOwnerStoresViewModel()
         {
