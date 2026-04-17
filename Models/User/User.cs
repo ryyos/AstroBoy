@@ -16,7 +16,8 @@ public abstract class User
         this.Name = name;
         this.Email = email;
         this.Password = password;
-        this.Id = Encrypts.Md5Hash(name + email);
+        //this.Id = Encrypts.Md5Hash(name + email);
+        this.Id = role;
         Role = role;
         Balance = 0;
     }

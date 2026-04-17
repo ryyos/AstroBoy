@@ -15,7 +15,7 @@ namespace AstroBoy.Services
                     name: "Ryyos",
                     email: "ryyos@gmail.com",
                     password: "123",
-                    role: "Owner"
+                    role: "owner"
                 )
             };
         }
