@@ -4,40 +4,123 @@
        xmlns:customer="clr-namespace:AstroBoy.Views.VCustomer"
        x:Class="AstroBoy.Views.VCustomer.CustomerAppShell"
        FlyoutBehavior="Flyout"
-       FlyoutBackgroundColor="#FFFFFF">
+       FlyoutBackgroundColor="#F8F9FF">
 
-    <!-- Header bagian atas hamburger menu -->
+    <!-- Custom template untuk setiap item di flyout menu -->
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid HeightRequest="56"
+                  Padding="16,0"
+                  ColumnSpacing="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Icon menu -->
+                <Image Grid.Column="0"
+                       Source="{Binding FlyoutIcon}"
+                       WidthRequest="24"
+                       HeightRequest="24"
+                       VerticalOptions="Center"/>
+
+                <!-- Teks menu -->
+                <Label Grid.Column="1"
+                       Text="{Binding Title}"
+                       FontSize="15"
+                       FontAttributes="Bold"
+                       TextColor="#333333"
+                       VerticalOptions="Center"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <!-- Header flyout -->
     <Shell.FlyoutHeader>
-        <VerticalStackLayout BackgroundColor="#3E64FF" Padding="20">
-            <Label Text="Customer"
-                   TextColor="Black"
-                   FontSize="20"
-                   FontAttributes="Bold"/>
-            <Label Text="Welcome back!"
-                   TextColor="Black"
+        <Grid BackgroundColor="#3E64FF"
+              Padding="24,40,24,28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Lingkaran avatar inisial -->
+            <Border Grid.Row="0"
+                    BackgroundColor="#FFFFFF"
+                    StrokeThickness="0"
+                    WidthRequest="60"
+                    HeightRequest="60"
+                    HorizontalOptions="Start">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="30"/>
+                </Border.StrokeShape>
+                <Label Text="C"
+                       FontSize="26"
+                       FontAttributes="Bold"
+                       TextColor="#3E64FF"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+            </Border>
+
+            <!-- Nama customer -->
+            <Label Grid.Row="1"
+                   Text="Customer"
+                   TextColor="#FFFFFF"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   Margin="0,12,0,2"/>
+
+            <!-- Subtitle -->
+            <Label Grid.Row="2"
+                   Text="Alo, Welcome back! 👋"
+                   TextColor="#C7D9FF"
                    FontSize="13"/>
-        </VerticalStackLayout>
+        </Grid>
     </Shell.FlyoutHeader>
 
-    <!-- Menu: Halaman Products (Home) -->
-    <FlyoutItem Title="Products"  Icon="shopping.svg">
+    <!-- Footer bawah flyout -->
+    <Shell.FlyoutFooter>
+        <VerticalStackLayout Padding="24,16"
+                             BackgroundColor="#F8F9FF">
+            <BoxView HeightRequest="1"
+                     BackgroundColor="#E5E7EB"
+                     Margin="0,0,0,12"/>
+            <Label Text="AstroBoy v1.0"
+                   TextColor="#9CA3AF"
+                   FontSize="12"
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+    </Shell.FlyoutFooter>
+
+    <!-- Cart icon pojok kanan atas, muncul di semua halaman -->
+    <Shell.ToolbarItems>
+        <ToolbarItem Text="Cart"
+                     IconImageSource="add_to_cart.png"
+                     Order="Primary"
+                     Priority="0"
+                     Clicked="OnCartClicked"/>
+    </Shell.ToolbarItems>
+
+    <!-- Menu: Products -->
+    <FlyoutItem Title="Products" Icon="shopping_bag.png">
         <ShellContent
             Title="Products"
-            ContentTemplate="{DataTemplate customer:CustomerHomePage}" />
+            ContentTemplate="{DataTemplate customer:CustomerHomePage}"/>
     </FlyoutItem>
 
-    <!-- Menu: Halaman Store -->
-    <FlyoutItem Title="Store" Icon="shopping_cart.svg">
+    <!-- Menu: Store -->
+    <FlyoutItem Title="Store" Icon="store_icon.png">
         <ShellContent
             Title="Store"
-            ContentTemplate="{DataTemplate customer:StorePage}" />
+            ContentTemplate="{DataTemplate customer:StorePage}"/>
     </FlyoutItem>
 
-    <!-- Menu: Halaman Profile -->
-    <FlyoutItem Title="Profile" Icon="profile.svg">
+    <!-- Menu: Profile -->
+    <FlyoutItem Title="Profile" Icon="profil_icon.png">
         <ShellContent
             Title="Profile"
-            ContentTemplate="{DataTemplate customer:ProfilePage}" />
+            ContentTemplate="{DataTemplate customer:ProfilePage}"/>
     </FlyoutItem>
 
 </Shell>
