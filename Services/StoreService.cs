@@ -67,4 +67,9 @@ public class StoreService
         var item = store?.Items.FirstOrDefault(i => i.Id == itemId);
         if (item != null) store!.Items.Remove(item);
     }
+
+    public List<Store> GetAll()
+    {
+        return _stores;
+    }
 }

@@ -18,16 +18,13 @@ namespace AstroBoy.ViewModels.AdminViewModel
             ViewStoresCommand = new Command<Owner>(OnViewStores);
 
             Owners = new ObservableCollection<Owner>(
-                new OwnerService()
-                    .GetAll().Where(u => u.Role == "Owner")
+                new OwnerService().GetAll()
             );
-
-            ViewStoresCommand = new Command<Owner>(OnViewStores);
         }
 
         private async void OnViewStores(Owner owner)
         {
-            await Shell.Current.GoToAsync($"OwnerStoresPage?OwnerId={owner.Id}");
+            await Shell.Current.GoToAsync($"AdminOwnerStoresPage?OwnerId={owner.Id}");
         }
     }
 }

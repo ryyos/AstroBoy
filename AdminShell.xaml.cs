@@ -8,6 +8,7 @@ namespace AstroBoy
         {
             InitializeComponent();
             Routing.RegisterRoute(nameof(EditCustomerPage), typeof(EditCustomerPage));
+            Routing.RegisterRoute(nameof(AdminOwnerStoresPage), typeof(AdminOwnerStoresPage));
         }
     }
 }
