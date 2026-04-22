@@ -2,26 +2,42 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AstroBoy.Views.Auth.LoginPage">
 
-    <VerticalStackLayout Padding="24" Spacing="16">
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
 
-        <Label Text="AstroBoy Login"
-               FontSize="24"
-               FontAttributes="Bold" />
+            <Label Text="AstroBoy Login"
+                   FontSize="24"
+                   FontAttributes="Bold" />
 
-        <Entry Placeholder="Username"
-               Text="{Binding Username}" />
+            <Entry Placeholder="Email"
+                   Text="{Binding _Email}" />
 
-        <Entry Placeholder="Password"
-               IsPassword="True"
-               Text="{Binding Password}" />
+            <Entry Placeholder="Password"
+                   Text="{Binding Password}" />
 
-        <Button Text="Login"
-                Command="{Binding LoginCommand}" />
+            <Button Text="Login"
+                    Command="{Binding LoginCommand}" />
 
-        <Label Text="{Binding ErrorMessage}"
-               TextColor="Red"
-               FontSize="12"/>
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="Red"
+                   FontSize="12"/>
 
-    </VerticalStackLayout>
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+
+                <Label Text="Belum punya akun?" FontSize="12"/>
+
+                <Label Text="Register"
+                       TextColor="Blue"
+                       FontAttributes="Bold"
+                       FontSize="12">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToRegisterCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

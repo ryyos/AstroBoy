@@ -2,7 +2,7 @@ namespace AstroBoy.Models;
 
 public abstract class Staff : User
 {
-    protected Staff(string name, string email, string password, string role) : base(name, email, password, role)
+    protected Staff(string name, string email, string password, string role, string? Id = null) : base(name, email, password, role, Id)
     {
     }
 

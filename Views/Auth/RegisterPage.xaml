@@ -1,0 +1,30 @@
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="AstroBoy.Views.Auth.RegisterPage">
+
+    <VerticalStackLayout Padding="30" Spacing="15">
+
+        <Label Text="Register"
+               FontSize="24"
+               HorizontalOptions="Center"/>
+
+        <Entry Placeholder="Name"
+               Text="{Binding name}" />
+        
+        <Entry Placeholder="Email"
+               Text="{Binding email}" />
+
+        <Entry Placeholder="Password"
+               IsPassword="True"
+               Text="{Binding password}" />
+        
+        <Picker Title="Pilih Role"
+                ItemsSource="{Binding Roles}"
+                SelectedItem="{Binding Role}" />
+
+        <Button Text="Register"
+                Command="{Binding RegisterCommand}" />
+
+    </VerticalStackLayout>
+</ContentPage>

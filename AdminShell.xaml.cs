@@ -1,4 +1,5 @@
-﻿using AstroBoy.Views.VAdmin;
+﻿using AstroBoy.Views.Auth;
+using AstroBoy.Views.VAdmin;
 
 namespace AstroBoy
 {
@@ -10,6 +11,7 @@ namespace AstroBoy
             Routing.RegisterRoute(nameof(EditCustomerPage), typeof(EditCustomerPage));
             Routing.RegisterRoute(nameof(AdminOwnerStoresPage), typeof(AdminOwnerStoresPage));
             Routing.RegisterRoute(nameof(AdminStoreItemsPage), typeof(AdminStoreItemsPage));
+            Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
         }
     }
 }
