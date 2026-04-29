@@ -1,8 +1,25 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using AstroBoy.Utils;
 using AstroBoy.ViewModels.Base;
+using AstroBoy.Views.VCustomer;
 
 namespace AstroBoy.ViewModels.CustomerViewModel;
+
+// ── Helper: data satu toko untuk StorePage ────────────────────────────────────
+/// <summary>
+/// Merepresentasikan satu toko beserta daftar produknya.
+/// Digunakan di StorePage (card toko) dan StoreDetailPage (detail toko).
+/// </summary>
+public class StoreDisplay
+{
+    public string StoreName { get; init; } = string.Empty;
+    public string StoreImage { get; init; } = string.Empty;
+    public List<ProductDisplay> Products { get; init; } = new();
+
+    public int ProductCount => Products.Count;
+    public string ProductLabel => $"{ProductCount} produk tersedia";
+}
 
 // ── Helper: chip filter toko ──────────────────────────────────────────────────
 /// <summary>
@@ -147,11 +164,28 @@ public class StoreViewModel : BaseViewModel
         set { _toastMessage = value; OnPropertyChanged(); }
     }
 
+    // ── StorePage: daftar semua toko ─────────────────────────────────────────
+    public ObservableCollection<StoreDisplay> FilteredStores { get; } = new();
+
+    private string _storeSearchQuery = string.Empty;
+
+    public string StoreSearchQuery
+    {
+        get => _storeSearchQuery;
+        set
+        {
+            _storeSearchQuery = value;
+            OnPropertyChanged();
+            ApplyStoreFilter(); // filter realtime saat mengetik
+        }
+    }
+
     // ── Commands ──────────────────────────────────────────────────────────────
     public ICommand AddToCartCommand { get; }
     public ICommand RemoveFromCartCommand { get; }
     public ICommand GoToCartCommand { get; }
     public ICommand SelectStoreFilterCommand { get; }
+    public ICommand OpenStoreCommand { get; } // StorePage → StoreDetailPage
 
     public StoreViewModel()
     {
@@ -160,12 +194,16 @@ public class StoreViewModel : BaseViewModel
         RemoveFromCartCommand = new Command<ProductDisplay>(RemoveFromCart);
         SelectStoreFilterCommand = new Command<string>(SelectStoreFilter);
         GoToCartCommand = new Command(async () =>
-            await Shell.Current.GoToAsync("CartPage"));
+            await Shell.Current.GoToAsync(nameof(CartPage)));
+        OpenStoreCommand = new Command<StoreDisplay>(async store =>
+            await OpenStore(store));
 
         // Setup awal
         LoadDummyData();
         BuildStoreFilters();
+        BuildStores();
         ApplyFilter();
+        ApplyStoreFilter();
     }
 
     // ── Dummy data ────────────────────────────────────────────────────────────
@@ -211,6 +249,59 @@ public class StoreViewModel : BaseViewModel
                 Stock       = 100
             },
         });
+    }
+
+    // ── Build StoreDisplay list (untuk StorePage) ─────────────────────────────
+    /// <summary>
+    /// Membentuk daftar StoreDisplay dari _allProducts.
+    /// Setiap toko unik dijadikan satu StoreDisplay dengan list produknya.
+    /// </summary>
+    private readonly List<StoreDisplay> _allStores = new();
+
+    private void BuildStores()
+    {
+        _allStores.Clear();
+        var grouped = _allProducts.GroupBy(p => p.StoreName);
+        foreach (var group in grouped)
+        {
+            _allStores.Add(new StoreDisplay
+            {
+                StoreName = group.Key,
+                StoreImage = "store_icon.png",
+                Products = group.ToList()
+            });
+        }
+    }
+
+    // ── Filter StorePage by nama toko ─────────────────────────────────────────
+    private void ApplyStoreFilter()
+    {
+        var result = _allStores.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(_storeSearchQuery))
+            result = result.Where(s =>
+                s.StoreName.Contains(_storeSearchQuery, StringComparison.OrdinalIgnoreCase));
+
+        FilteredStores.Clear();
+        foreach (var store in result)
+            FilteredStores.Add(store);
+    }
+
+    // ── Navigasi ke StoreDetailPage ───────────────────────────────────────────
+    private async Task OpenStore(StoreDisplay store)
+    {
+        if (store is null) return;
+
+        // Sinkronkan qty produk di toko ini dengan CartBag sebelum dikirim
+        foreach (var p in store.Products)
+        {
+            var entry = CartBag.Items.FirstOrDefault(
+                e => e.ProductName == p.ProductName && e.StoreName == p.StoreName);
+            p.Quantity = entry?.Qty ?? 0;
+        }
+
+        await Shell.Current.GoToAsync(nameof(StoreDetailPage),
+            new Dictionary<string, object> { { "SelectedStore", store } });
     }
 
     // ── Build chip filter ─────────────────────────────────────────────────────
@@ -269,7 +360,9 @@ public class StoreViewModel : BaseViewModel
         if (product.Quantity >= product.Stock) return; // batas stok
 
         product.Quantity++;
-        CartCount++;
+        CartBag.Add(product.ProductName, product.StoreName, product.Price,
+                    product.ImageSource, product.Stock);
+        CartCount = CartBag.TotalCount;
 
         // Tampilkan toast "Ditambahkan ke keranjang" selama 2 detik
         ToastMessage = $"✓ {product.ProductName} ditambahkan ke keranjang";
@@ -285,6 +378,40 @@ public class StoreViewModel : BaseViewModel
         if (product.Quantity <= 0) return; // minimum 0
 
         product.Quantity--;
-        CartCount--;
+        CartBag.Decrement(product.ProductName, product.StoreName);
+        CartCount = CartBag.TotalCount;
+    }
+
+    // ── Refresh dari CartBag (dipanggil saat OnAppearing di CustomerHomePage) ─
+    /// <summary>
+    /// Sinkronkan ulang Quantity setiap ProductDisplay dan CartCount dari CartBag.
+    /// Dipanggil setiap kali CustomerHomePage muncul kembali (misal setelah dari CartPage).
+    /// </summary>
+    public void RefreshFromBag()
+    {
+        foreach (var product in _allProducts)
+        {
+            var entry = CartBag.Items.FirstOrDefault(
+                e => e.ProductName == product.ProductName && e.StoreName == product.StoreName);
+            product.Quantity = entry?.Qty ?? 0;
+        }
+        CartCount = CartBag.TotalCount;
+    }
+
+    // ── Dipanggil dari StoreDetailPage.OnAppearing ────────────────────────────
+    /// <summary>
+    /// Sinkronkan ulang qty produk di semua StoreDisplay dari CartBag.
+    /// Dipanggil setiap kali StorePage/StoreDetailPage muncul kembali.
+    /// </summary>
+    public void RefreshStoresFromBag()
+    {
+        foreach (var store in _allStores)
+            foreach (var product in store.Products)
+            {
+                var entry = CartBag.Items.FirstOrDefault(
+                    e => e.ProductName == product.ProductName && e.StoreName == product.StoreName);
+                product.Quantity = entry?.Qty ?? 0;
+            }
+        CartCount = CartBag.TotalCount;
     }
 }

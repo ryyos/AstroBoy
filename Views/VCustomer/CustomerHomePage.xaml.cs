@@ -10,5 +10,14 @@ public partial class CustomerHomePage : ContentPage
         // Semua logic ada di StoreViewModel (MVVM)
         BindingContext = new StoreViewModel();
     }
+
+    // Sinkronkan ulang CartCount dan Quantity produk saat halaman muncul kembali
+    // (misal setelah user kembali dari CartPage dan menghapus item di sana)
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is StoreViewModel vm)
+            vm.RefreshFromBag();
+    }
 }
 

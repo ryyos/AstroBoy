@@ -2,11 +2,171 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AstroBoy.Views.VCustomer.StoreDetailPage"
-             Title="StoreDetailPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             x:Name="pageRoot"
+             BackgroundColor="#F8F9FF">
+
+    <!-- ═══════════════════════════════════════════════
+         LAYOUT: Banner (Auto) + Label section (Auto) + Product Grid (*)
+    ════════════════════════════════════════════════ -->
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- ── Banner toko full width, height 180, sudut bawah rounded ──── -->
+        <Border Grid.Row="0"
+                StrokeThickness="0"
+                HeightRequest="180">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,24,24"/>
+            </Border.StrokeShape>
+
+            <!-- Gambar banner -->
+            <Grid>
+                <Image Source="{Binding StoreImage}"
+                       Aspect="AspectFill"
+                       BackgroundColor="#E5E7EB"/>
+
+                <!-- Overlay gradient gelap di bagian bawah banner -->
+                <BoxView VerticalOptions="End"
+                         HeightRequest="80"
+                         Opacity="0.55">
+                    <BoxView.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="Transparent" Offset="0"/>
+                            <GradientStop Color="#000000"     Offset="1"/>
+                        </LinearGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
+
+                <!-- Nama toko overlay di atas gradient -->
+                <Label Text="{Binding StoreName}"
+                       TextColor="White"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       VerticalOptions="End"
+                       Margin="16,0,16,16"/>
+            </Grid>
+        </Border>
+
+        <!-- ── Label section "Produk Tersedia (n)" ────────────────────── -->
+        <Label Grid.Row="1"
+               Text="{Binding ProductSectionLabel}"
+               FontSize="15"
+               FontAttributes="Bold"
+               TextColor="#1F2937"
+               Margin="16,16,16,4"/>
+
+        <!-- ── Product Grid 2 Kolom (sama persis dengan CustomerHomePage) ─ -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding Products}"
+                        Margin="12,0,12,0">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical"
+                                 Span="2"
+                                 HorizontalItemSpacing="8"
+                                 VerticalItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <!-- Card produk: rounded corner, shadow tipis -->
+                    <Border BackgroundColor="White"
+                            StrokeThickness="0"
+                            Margin="0,0,0,2">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12"/>
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#000000"
+                                    Offset="0,2"
+                                    Radius="8"
+                                    Opacity="0.07"/>
+                        </Border.Shadow>
+
+                        <Grid RowDefinitions="130,Auto,Auto,Auto,Auto">
+
+                            <!-- Gambar produk -->
+                            <Border Grid.Row="0"
+                                    StrokeThickness="0"
+                                    HeightRequest="130">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12,12,0,0"/>
+                                </Border.StrokeShape>
+                                <Image Source="{Binding ImageSource}"
+                                       Aspect="AspectFill"/>
+                            </Border>
+
+                            <!-- Nama produk -->
+                            <Label Grid.Row="1"
+                                   Text="{Binding ProductName}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="#1F2937"
+                                   Margin="10,10,10,2"
+                                   LineBreakMode="TailTruncation"/>
+
+                            <!-- Nama toko -->
+                            <Label Grid.Row="2"
+                                   Text="{Binding StoreName}"
+                                   FontSize="12"
+                                   TextColor="#6B7280"
+                                   Margin="10,0,10,4"/>
+
+                            <!-- Harga -->
+                            <Label Grid.Row="3"
+                                   Text="{Binding PriceFormatted}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="#3E64FF"
+                                   Margin="10,0,10,8"/>
+
+                            <!-- Tombol [-] counter [+] -->
+                            <Grid Grid.Row="4"
+                                  ColumnDefinitions="*,Auto,*"
+                                  Margin="8,0,8,12">
+
+                                <Button Grid.Column="0"
+                                        Text="-"
+                                        Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.RemoveFromCartCommand}"
+                                        CommandParameter="{Binding .}"
+                                        WidthRequest="32"
+                                        HeightRequest="32"
+                                        CornerRadius="16"
+                                        BackgroundColor="#3E64FF"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Padding="0"
+                                        HorizontalOptions="Center"/>
+
+                                <Label Grid.Column="1"
+                                       Text="{Binding QuantityLabel}"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="#1F2937"
+                                       WidthRequest="30"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalOptions="Center"/>
+
+                                <Button Grid.Column="2"
+                                        Text="+"
+                                        Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.AddToCartCommand}"
+                                        CommandParameter="{Binding .}"
+                                        WidthRequest="32"
+                                        HeightRequest="32"
+                                        CornerRadius="16"
+                                        BackgroundColor="#3E64FF"
+                                        TextColor="White"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Padding="0"
+                                        HorizontalOptions="Center"/>
+                            </Grid>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+
 </ContentPage>
