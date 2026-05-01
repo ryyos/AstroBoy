@@ -37,7 +37,7 @@ namespace AstroBoy.ViewModels.AdminViewModel
 
         private void LoadItems()
         {
-            var data = _itemService.GetAll()
+            var data = _itemService.GetAllItems()
                                    .Where(i => i.StoreId == StoreId);
 
             Items.Clear();

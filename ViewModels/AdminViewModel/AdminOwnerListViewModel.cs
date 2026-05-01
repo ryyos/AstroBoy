@@ -18,7 +18,7 @@ namespace AstroBoy.ViewModels.AdminViewModel
             ViewStoresCommand = new Command<Owner>(OnViewStores);
 
             Owners = new ObservableCollection<Owner>(
-                new OwnerService().GetAll()
+                new OwnerService().GetAllOwners()
             );
         }
 

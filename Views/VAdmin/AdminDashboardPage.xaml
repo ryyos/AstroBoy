@@ -17,7 +17,7 @@
 
             <Frame Grid.Row="0" Grid.Column="0" Padding="15">
                 <VerticalStackLayout>
-                    <Label Text="Users" TextColor="Black" FontAttributes="Bold"/>
+                    <Label Text="Customers" TextColor="Black" FontAttributes="Bold"/>
                     <Label Text="{Binding TotalCustomers}"
                            FontSize="20"
                            TextColor="Black"
@@ -37,8 +37,8 @@
 
             <Frame Grid.Row="1" Grid.Column="0" Padding="15">
                 <VerticalStackLayout>
-                    <Label Text="Orders" TextColor="Black" FontAttributes="Bold"/>
-                    <Label Text="{Binding TotalOrders}"
+                    <Label Text="Owners" TextColor="Black" FontAttributes="Bold"/>
+                    <Label Text="{Binding TotalOwners}"
                            FontSize="20"
                            TextColor="Black"
                            FontAttributes="Bold"/>

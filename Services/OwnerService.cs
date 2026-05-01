@@ -1,4 +1,5 @@
 ﻿using System;
+using Database;
 using System.Collections.Generic;
 using System.Text;
 using AstroBoy.Models;
@@ -7,17 +8,23 @@ namespace AstroBoy.Services
 {
     internal class OwnerService
     {
-        public List<Owner> GetAll()
+
+        private List<Owner> owners;
+        private DatabaseContext db;
+
+        public OwnerService()
         {
-            return new List<Owner>
-            {
-                new Owner(
-                    name: "Ryyos",
-                    email: "ryyos@gmail.com",
-                    password: "123",
-                    role: "owner"
-                )
-            };
+            db = new DatabaseContext();
+            owners = db.GetAllOwners();
+        }
+        public List<Owner> GetAllOwners()
+        {
+            return owners;
+        }
+
+        public int GetTotalOwners()
+        {
+            return owners.Count;
         }
     }
 }

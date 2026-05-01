@@ -1,4 +1,6 @@
 ﻿using System;
+using Database;
+
 using System.Collections.Generic;
 using System.Text;
 using AstroBoy.Models;
@@ -7,10 +9,18 @@ namespace AstroBoy.Services
 {
     internal class CustomerService
     {
+        private List<Customer> customers;
+        private DatabaseContext db;
+
+        public CustomerService()
+        {
+            db = new DatabaseContext();
+            customers = db.GetAllCustomers();
+        }
 
         public int GetTotalCustomers()
         {
-            return 67;
+            return customers.Count;
         }
 
         public void AddCustomer(Customer customer)
@@ -19,14 +29,7 @@ namespace AstroBoy.Services
 
         public List<Customer> GetAllCustomers()
         {
-            return new List<Customer> {
-                new Customer(
-                    name: "Emma myers",
-                    email: "emma@gmail.com",
-                    password: "emma123",
-                    role: "admin"
-                )
-            };
+            return customers;
         }
 
         public void Delete(string id)

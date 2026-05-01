@@ -15,7 +15,7 @@ namespace AstroBoy.ViewModels.AdminViewModel
 
         public int TotalCustomers { get; set; }
         public int TotalStores { get; set; }
-        public int TotalOrders { get; set; }
+        public int TotalOwners { get; set; }
         public int TotalItems { get; set; }
 
         public AdminDashboardViewModel()

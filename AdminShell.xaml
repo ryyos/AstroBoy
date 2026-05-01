@@ -10,9 +10,9 @@
             ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Users">
+    <FlyoutItem Title="Customers">
         <ShellContent
-            Title="Manage Users"
+            Title="Manage Customers"
             ContentTemplate="{DataTemplate views:AdminCustomerPage}" />
     </FlyoutItem>
 

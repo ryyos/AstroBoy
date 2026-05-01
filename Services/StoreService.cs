@@ -1,57 +1,37 @@
-﻿using AstroBoy.Models;
+﻿using Database;
+using AstroBoy.Models;
 
 namespace AstroBoy.Services;
 
 public class StoreService
 {
-    private static readonly List<Store> _stores = new()
+    private DatabaseContext db;
+    private static List<Store>? _stores;
+
+    public StoreService()
     {
-        new Store
-        {
-            StoreId = "store-001",
-            OwnerId = "owner",
-            Name = "Toko Elektronik Jaya",
-            Address = "Jl. Sudirman No.1",
-            Phone = "08123456789",
-            Items = new List<Item>
-            {
-                new Item { Id = Guid.NewGuid(), Name = "Laptop ASUS", Price = 8500000, Stock = 10, Category = "Elektronik", StoreId = "store-001" },
-                new Item { Id = Guid.NewGuid(), Name = "Mouse Wireless", Price = 150000, Stock = 50, Category = "Aksesoris", StoreId = "store-001" },
-            }
-        },
-        new Store
-        {
-            StoreId = "store-002",
-            OwnerId = "owner",
-            Name = "Toko Fashion Keren",
-            Address = "Jl. Gatot Subroto No.5",
-            Phone = "08987654321",
-            Items = new List<Item>
-            {
-                new Item { Id = Guid.NewGuid(), Name = "Kaos Polos", Price = 75000, Stock = 100, Category = "Pakaian", StoreId = "store-002" },
-                new Item { Id = Guid.NewGuid(), Name = "Celana Jeans", Price = 250000, Stock = 30, Category = "Pakaian", StoreId = "store-002" },
-            }
-        }
-    };
+        db = new DatabaseContext();
+        _stores = db.GetAllStores();
+    }
 
-    public int GetTotalStores() => _stores.Count;
+    public int GetTotalStores() => _stores!.Count;
 
-    public List<Store> GetAllStores() => _stores.ToList();
+    public List<Store> GetAllStores() => _stores!.ToList();
 
     public List<Store> GetStoresByOwner(string ownerId)
-        => _stores.Where(s => s.OwnerId == ownerId).ToList();
+        => _stores!.Where(s => s.OwnerId == ownerId).ToList();
 
     public Store? GetStoreById(string storeId)
-        => _stores.FirstOrDefault(s => s.StoreId == storeId);
+        => _stores!.FirstOrDefault(s => s.StoreId == storeId);
 
     public void AddItem(string storeId, Item item)
-        => GetStoreById(storeId)?.Items.Add(item);
+        => GetStoreById(storeId)?.Items!.Add(item);
 
     public void UpdateItem(Item updatedItem)
     {
-        foreach (var store in _stores)
+        foreach (var store in _stores!)
         {
-            var item = store.Items.FirstOrDefault(i => i.Id == updatedItem.Id);
+            var item = store!.Items!.FirstOrDefault(i => i.Id == updatedItem.Id);
             if (item == null) continue;
             item.Name = updatedItem.Name;
             item.Price = updatedItem.Price;
@@ -61,18 +41,18 @@ public class StoreService
         }
     }
 
-    public void DeleteItem(Guid itemId, string storeId)
+    public void DeleteItem(string itemId, string storeId)
     {
         var store = GetStoreById(storeId);
-        var item = store?.Items.FirstOrDefault(i => i.Id == itemId);
-        if (item != null) store!.Items.Remove(item);
+        var item = store?.Items!.FirstOrDefault(i => i.Id == itemId);
+        if (item != null) store!.Items!.Remove(item);
     }
 
-    public void AddStore(Store store) => _stores.Add(store);
+    public void AddStore(Store store) => _stores!.Add(store);
 
     public void UpdateStore(Store updatedStore)
     {
-        var store = _stores.FirstOrDefault(s => s.StoreId == updatedStore.StoreId);
+        var store = _stores!.FirstOrDefault(s => s.StoreId == updatedStore.StoreId);
         if (store == null) return;
         store.Name = updatedStore.Name;
         store.Address = updatedStore.Address;
@@ -81,7 +61,7 @@ public class StoreService
 
     public void DeleteStore(string storeId)
     {
-        var store = _stores.FirstOrDefault(s => s.StoreId == storeId);
-        if (store != null) _stores.Remove(store);
+        var store = _stores!.FirstOrDefault(s => s.StoreId == storeId);
+        if (store != null) _stores!.Remove(store);
     }
 }

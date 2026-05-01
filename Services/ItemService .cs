@@ -1,4 +1,5 @@
 ﻿using System;
+using Database;
 using System.Collections.Generic;
 using System.Text;
 using AstroBoy.Models;
@@ -7,17 +8,22 @@ namespace AstroBoy.Services
 {
     internal class ItemService
     {
+        private List<Item> items;
+        private DatabaseContext db;
+
+        public ItemService()
+        {
+            db = new DatabaseContext();
+            items = db.GetAllItems();
+        }
         public int GetTotalItems()
         {
-            return 67;
+            return items.Count;
         }
 
-        public List<Item> GetAll()
+        public List<Item> GetAllItems()
         {
-            return new List<Item>
-            {
-                new Item { Id = Guid.NewGuid(), Name = "Laptop ASUS", Price = 8500000, Stock = 10, Category = "Elektronik", StoreId = "store-001" }
-            };
+            return items;
         }
     }
 }

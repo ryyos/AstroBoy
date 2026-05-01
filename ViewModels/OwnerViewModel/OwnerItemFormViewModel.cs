@@ -62,7 +62,7 @@ public class OwnerItemFormViewModel : BaseViewModel
         {
             var newItem = new Item
             {
-                Id = Guid.NewGuid(),
+                Id = "68767887",
                 Name = Name,
                 Price = price,
                 Stock = stock,

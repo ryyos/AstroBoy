@@ -88,7 +88,7 @@ namespace Database
                 {
                     if (reader.Read())
                     {
-                        if(reader["role"].ToString() == "admin")
+                        if (reader["role"].ToString() == "admin")
                         {
                             return new Admin
                             (
@@ -98,7 +98,8 @@ namespace Database
                                 role: reader["role"].ToString()!,
                                 Id: reader["id"].ToString()!
                             );
-                        } else if (reader["role"].ToString() == "owner")
+                        }
+                        else if (reader["role"].ToString() == "owner")
                         {
                             return new Owner
                             (
@@ -108,7 +109,8 @@ namespace Database
                                 password: reader["password"].ToString()!,
                                 role: reader["role"].ToString()!
                             );
-                        } else if (reader["role"].ToString() == "customer")
+                        }
+                        else if (reader["role"].ToString() == "customer")
                         {
                             return new Customer
                             (
@@ -142,6 +144,60 @@ namespace Database
                 {
                     string data = $"ID: {reader["id"]}, Name: {reader["name"]}, Email: {reader["email"]}";
                     users.Add(data);
+                }
+            }
+
+            return users;
+        }
+
+        public List<Customer> GetAllCustomers()
+        {
+            var users = new List<Customer>();
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                var query = "SELECT * FROM users WHERE role = 'customer'";
+                var command = new SqliteCommand(query, connection);
+                var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    users.Add(
+                        new Customer(
+                            name: reader["name"].ToString()!,
+                            email: reader["email"].ToString()!,
+                            password: reader["password"].ToString()!
+                        )
+                    );
+                }
+            }
+
+            return users;
+        }
+
+        public List<Owner> GetAllOwners()
+        {
+            var users = new List<Owner>();
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                var query = "SELECT * FROM users WHERE role = 'owner'";
+                var command = new SqliteCommand(query, connection);
+                var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    users.Add(
+                        new Owner(
+                            name: reader["name"].ToString()!,
+                            email: reader["email"].ToString()!,
+                            password: reader["password"].ToString()!
+                        )
+                    );
                 }
             }
 
@@ -185,6 +241,156 @@ namespace Database
 
                 command.ExecuteNonQuery();
             }
+        }
+
+        private List<Item> GetItemsByStoreId(SqliteConnection connection, string storeId)
+        {
+            var items = new List<Item>();
+
+            var query = "SELECT * FROM items WHERE store_id = @storeId";
+            var cmd = new SqliteCommand(query, connection);
+            cmd.Parameters.AddWithValue("@storeId", storeId);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    items.Add(new Item
+                    {
+                        Id = reader["id"].ToString()!,
+                        Name = reader["name"].ToString()!,
+                        Price = Convert.ToSingle(reader["price"]),
+                        Stock = Convert.ToInt32(reader["stock"]),
+                        Category = reader["category"].ToString()!,
+                        StoreId = reader["store_id"].ToString()!
+                    });
+                }
+            }
+
+            return items;
+        }
+
+        private List<Order> GetOrdersByStoreId(SqliteConnection connection, string storeId)
+        {
+            var orders = new List<Order>();
+
+            var query = "SELECT * FROM orders WHERE store_id = @storeId";
+            var cmd = new SqliteCommand(query, connection);
+            cmd.Parameters.AddWithValue("@storeId", storeId);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var order = new Order
+                    {
+                        Id = reader["id"].ToString()!,
+                        CustomerId = reader["customer_id"].ToString()!,
+                        StoreId = reader["store_id"].ToString()!,
+                        CreatedAt = reader["created_at"].ToString()!,
+                        Status = reader["status"].ToString()!
+                    };
+
+                    order.OrderItems = GetOrderItems(connection, order.Id);
+
+                    orders.Add(order);
+                }
+            }
+
+            return orders;
+        }
+
+        private List<OrderItem> GetOrderItems(SqliteConnection connection, string orderId)
+        {
+            var items = new List<OrderItem>();
+
+            var query = "SELECT * FROM order_items WHERE order_id = @orderId";
+            var cmd = new SqliteCommand(query, connection);
+            cmd.Parameters.AddWithValue("@orderId", orderId);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    items.Add(new OrderItem
+                    {
+                        ItemId = reader["item_id"].ToString()!,
+                        ItemName = reader["item_name"].ToString()!,
+                        UnitPrice = Convert.ToInt32(reader["unit_price"]),
+                        Quantity = Convert.ToInt32(reader["quantity"])
+                    });
+                }
+            }
+
+            return items;
+        }
+
+        public List<Store> GetAllStores()
+        {
+            var stores = new List<Store>();
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                var storeQuery = "SELECT * FROM stores";
+                var storeCmd = new SqliteCommand(storeQuery, connection);
+
+                using (var reader = storeCmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var store = new Store
+                        {
+                            StoreId = reader["store_id"].ToString()!,
+                            OwnerId = reader["owner_id"].ToString()!,
+                            Name = reader["name"].ToString()!,
+                            Address = reader["address"]?.ToString(),
+                            Phone = reader["phone"]?.ToString()
+                        };
+
+                        store.Items = GetItemsByStoreId(connection, store.StoreId);
+                        store.Orders = GetOrdersByStoreId(connection, store.StoreId);
+
+                        stores.Add(store);
+                    }
+                }
+            }
+
+            return stores;
+        }
+
+        public List<Item> GetAllItems()
+        {
+            var items = new List<Item>();
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                var itemQuery = "SELECT * FROM items";
+                var storeCmd = new SqliteCommand(itemQuery, connection);
+
+                using (var reader = storeCmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var item = new Item
+                        {
+                            Id = reader["id"].ToString()!,
+                            Name = reader["name"].ToString()!,
+                            Price = int.Parse(reader["price"].ToString()!),
+                            Stock = int.Parse(reader["stock"].ToString()!),
+                            Category = reader["category"].ToString()!,
+                            StoreId = reader["store_id"].ToString()!,
+                        };
+
+                        items.Add(item);
+                    }
+                }
+            }
+
+            return items;
         }
     }
 }
