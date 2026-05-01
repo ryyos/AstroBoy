@@ -11,6 +11,9 @@ public partial class CustomerAppShell : Shell
 
         // Daftarkan route untuk CartPage
         Routing.RegisterRoute(nameof(CartPage), typeof(CartPage));
+
+        // Daftarkan route untuk OrderHistoryPage (navigasi dari ProfilePage)
+        Routing.RegisterRoute(nameof(OrderHistoryPage), typeof(OrderHistoryPage));
     }
 
     private async void OnCartClicked(object sender, EventArgs e)

@@ -36,6 +36,8 @@ public class StoreService
 
     public int GetTotalStores() => _stores.Count;
 
+    public List<Store> GetAllStores() => _stores.ToList();
+
     public List<Store> GetStoresByOwner(string ownerId)
         => _stores.Where(s => s.OwnerId == ownerId).ToList();
 

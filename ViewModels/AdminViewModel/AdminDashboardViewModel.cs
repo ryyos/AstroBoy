@@ -10,7 +10,7 @@ namespace AstroBoy.ViewModels.AdminViewModel
     {
         private readonly CustomerService _customerService;
         private readonly StoreService _storeService;
-        private readonly OrderService _orderService;
+        private readonly OwnerService _ownerService;
         private readonly ItemService _itemService;
 
         public int TotalCustomers { get; set; }
@@ -22,7 +22,7 @@ namespace AstroBoy.ViewModels.AdminViewModel
         {
             _customerService = new CustomerService();
             _storeService = new StoreService();
-            _orderService = new OrderService();
+            _ownerService = new OwnerService();
             _itemService = new ItemService();
 
             LoadData();
@@ -31,8 +31,8 @@ namespace AstroBoy.ViewModels.AdminViewModel
         private void LoadData()
         {
             TotalCustomers = _customerService.GetTotalCustomers();
-            TotalStores = _storeService.GetTotalStores();       
-            TotalOrders = _orderService.GetTotalOrders();
+            TotalStores = _storeService.GetTotalStores();
+            TotalOwners = _ownerService.GetTotalOwners();
             TotalItems = _itemService.GetTotalItems();
         }
     }
