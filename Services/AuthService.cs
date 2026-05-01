@@ -19,6 +19,15 @@ public class AuthService
             return owner;
         }
 
+        // Dummy customer untuk testing
+        if (username == "customer" && password == "123")
+        {
+            return new Customer("Willy Lengkong", "customer@astroboy.com", password, "customer")
+            {
+                Balance = 2_500_000
+            };
+        }
+
         return new Customer(username, username, password, "customer");
     }
-} 
+}

@@ -123,4 +123,11 @@
             ContentTemplate="{DataTemplate customer:ProfilePage}"/>
     </FlyoutItem>
 
+    <!-- Menu: Riwayat Pesanan -->
+    <FlyoutItem Title="Riwayat Pesanan" Icon="store_icon.png">
+        <ShellContent
+            Title="Riwayat Pesanan"
+            ContentTemplate="{DataTemplate customer:OrderHistoryPage}"/>
+    </FlyoutItem>
+
 </Shell>

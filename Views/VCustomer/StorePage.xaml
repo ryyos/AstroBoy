@@ -2,11 +2,120 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AstroBoy.Views.VCustomer.StorePage"
-             Title="StorePage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             x:Name="pageRoot"
+             Title="Store"
+             BackgroundColor="#F8F9FF">
+
+    <!-- ═══════════════════════════════════════════════
+         LAYOUT: Search Bar (Auto) + List Toko (*)
+    ════════════════════════════════════════════════ -->
+    <Grid RowDefinitions="Auto,*" Padding="16,12,16,0" RowSpacing="12">
+
+        <!-- ── Search Bar ───────────────────────────────────────────── -->
+        <Border Grid.Row="0"
+                BackgroundColor="White"
+                StrokeThickness="1"
+                Stroke="#E5E7EB"
+                HeightRequest="46"
+                Padding="12,0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12"/>
+            </Border.StrokeShape>
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <Image Grid.Column="0"
+                       Source="search.svg"
+                       WidthRequest="18"
+                       HeightRequest="18"
+                       VerticalOptions="Center"/>
+                <Entry Grid.Column="1"
+                       Text="{Binding StoreSearchQuery}"
+                       Placeholder="Cari toko..."
+                       PlaceholderColor="#9CA3AF"
+                       BackgroundColor="Transparent"
+                       TextColor="#1F2937"
+                       FontSize="14"
+                       VerticalOptions="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- ── List Toko ──────────────────────────────────────────────── -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding FilteredStores}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <!-- Card toko: background putih, rounded 16, shadow tipis -->
+                    <Border BackgroundColor="White"
+                            StrokeThickness="0"
+                            Margin="0,0,0,12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16"/>
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#000000"
+                                    Offset="0,2"
+                                    Radius="8"
+                                    Opacity="0.07"/>
+                        </Border.Shadow>
+
+                        <Grid RowDefinitions="160,Auto">
+
+                            <!-- Gambar toko: full width, height 160, sudut atas rounded -->
+                            <Border Grid.Row="0"
+                                    StrokeThickness="0"
+                                    HeightRequest="160">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="16,16,0,0"/>
+                                </Border.StrokeShape>
+                                <Image Source="{Binding StoreImage}"
+                                       Aspect="AspectFill"
+                                       BackgroundColor="#E5E7EB"/>
+                            </Border>
+
+                            <!-- Info toko + tombol Lihat -->
+                            <Grid Grid.Row="1"
+                                  ColumnDefinitions="*,Auto"
+                                  Padding="16,12,16,14"
+                                  VerticalOptions="Center">
+
+                                <!-- Nama toko + jumlah produk -->
+                                <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                    <Label Text="{Binding StoreName}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="#1F2937"/>
+                                    <Label Text="{Binding ProductLabel}"
+                                           FontSize="13"
+                                           TextColor="#6B7280"/>
+                                </VerticalStackLayout>
+
+                                <!-- Tombol Lihat -->
+                                <Border Grid.Column="1"
+                                        BackgroundColor="#3E64FF"
+                                        StrokeThickness="0"
+                                        Padding="16,8">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="20"/>
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.OpenStoreCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="Lihat"
+                                           TextColor="White"
+                                           FontSize="13"
+                                           FontAttributes="Bold"/>
+                                </Border>
+
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+
 </ContentPage>

@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using AstroBoy.Services;
+using AstroBoy.Utils;
 using AstroBoy.Views.Owner;
 using AstroBoy.Views.VCustomer;
 using AstroBoy.ViewModels.Base;
@@ -39,16 +40,19 @@ public class LoginViewModel : BaseViewModel
 
         if (user is AdminModel)
         {
-            Application.Current.MainPage = new AdminShell();
+            Application.Current!.Windows[0].Page = new AdminShell();
         }
         else if (user is OwnerModel owner)
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new OwnerDashboardPage(owner));
+            await Application.Current!.Windows[0].Page!.Navigation.PushAsync(new OwnerDashboardPage(owner));
         }
         else if (user is CustomerModel)
         {
+            // Simpan sesi user aktif sebelum pindah halaman
+            SessionUser.Set(user);
+
             // Arahkan ke Shell khusus Customer
-            Application.Current!.MainPage = new CustomerAppShell();
+            Application.Current!.Windows[0].Page = new CustomerAppShell();
         }
     }
 }
