@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using AstroBoy.Utils;
 using AstroBoy.ViewModels.Base;
+using Database;
 
 namespace AstroBoy.ViewModels.CustomerViewModel;
 
@@ -52,8 +53,9 @@ public class OrderViewModel : BaseViewModel
     /// </summary>
     public void RefreshOrders()
     {
-        // Balik urutan: terbaru di atas
-        var reversed = OrderHistory.Orders.Reverse().ToList();
-        Orders = new ObservableCollection<OrderRecord>(reversed);
+        var db = new DatabaseContext();
+        var customerId = SessionUser.Current?.Id ?? string.Empty;
+        var records = db.GetOrdersByCustomer(customerId);
+        Orders = new ObservableCollection<OrderRecord>(records);
     }
 }

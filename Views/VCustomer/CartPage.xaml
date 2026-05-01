@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:utils="clr-namespace:AstroBoy.Utils"
              x:Class="AstroBoy.Views.VCustomer.CartPage"
              x:Name="pageRoot"
              Title="Keranjang Belanja"
              BackgroundColor="#F8F9FF">
+
+    <ContentPage.Resources>
+        <utils:ItemImageConverter x:Key="ItemImageConverter" />
+    </ContentPage.Resources>
 
     <!-- ═══════════════════════════════════════════════════════════
          LAYOUT UTAMA: List Item (*) + Footer Total/Checkout (Auto)
@@ -67,7 +72,7 @@
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="8"/>
                                     </Border.StrokeShape>
-                                    <Image Source="{Binding ImageSource}"
+                                    <Image Source="{Binding ImageSource, Converter={StaticResource ItemImageConverter}}"
                                            Aspect="AspectFill"/>
                                 </Border>
 

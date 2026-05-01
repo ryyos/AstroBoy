@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:utils="clr-namespace:AstroBoy.Utils"
              x:Class="AstroBoy.Views.VCustomer.StoreDetailPage"
              x:Name="pageRoot"
              BackgroundColor="#F8F9FF">
+
+    <ContentPage.Resources>
+        <utils:ItemImageConverter x:Key="ItemImageConverter" />
+    </ContentPage.Resources>
 
     <!-- ═══════════════════════════════════════════════
          LAYOUT: Banner (Auto) + Label section (Auto) + Product Grid (*)
@@ -90,7 +95,12 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12,12,0,0"/>
                                 </Border.StrokeShape>
-                                <Image Source="{Binding ImageSource}"
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.OpenProductDetailCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                                <Image Source="{Binding ImageSource, Converter={StaticResource ItemImageConverter}}"
                                        Aspect="AspectFill"/>
                             </Border>
 

@@ -55,7 +55,7 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="30"/>
                 </Border.StrokeShape>
-                <Label Text="C"
+                <Label Text="{Binding CustomerInitial}"
                        FontSize="26"
                        FontAttributes="Bold"
                        TextColor="#3E64FF"
@@ -65,7 +65,7 @@
 
             <!-- Nama customer -->
             <Label Grid.Row="1"
-                   Text="Customer"
+                   Text="{Binding CustomerName}"
                    TextColor="#FFFFFF"
                    FontSize="22"
                    FontAttributes="Bold"
@@ -73,7 +73,7 @@
 
             <!-- Subtitle -->
             <Label Grid.Row="2"
-                   Text="Alo, Welcome back! 👋"
+                   Text="{Binding CustomerSubtitle}"
                    TextColor="#C7D9FF"
                    FontSize="13"/>
         </Grid>

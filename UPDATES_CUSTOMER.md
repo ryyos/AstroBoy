@@ -527,3 +527,471 @@ Semua diganti ke API baru agar tidak ada warning saat build.
 | `StoreDetailPage`  | ✅ Selesai | Banner toko + product grid 2 kolom + sync CartBag         |
 | `ProfilePage`      | ✅ Selesai | Avatar, saldo, info card, shortcut order, logout          |
 | `OrderHistoryPage` | ✅ Selesai | Order cards, item list, total, badge selesai, empty state |
+
+---
+
+## Feat: Integrasi Database SQLite + Gambar Produk + ProductDetailPage
+
+### Bug Fix
+
+#### `Models/User/User.cs`
+
+- **Bug:** Constructor `Id = Id ?? Encrypts.Md5Hash(...)` hanya mengisi parameter lokal, bukan property
+- **Fix:** Diubah menjadi `this.Id = Id ?? Encrypts.Md5Hash(name + email)`
+- **Dampak:** `SessionUser.Current.Id` tidak lagi null setelah login → `GetStoresByOwner()` dan `GetOrdersByCustomer()` berfungsi benar
+
+---
+
+### Feat: Gambar Produk (MauiAsset + ItemImageConverter)
+
+#### `AstroBoy.csproj` _(diperbarui)_
+
+Gambar item tidak bisa didaftarkan sebagai `MauiImage` karena nama file diawali angka (melanggar aturan MAUI). Solusi: didaftarkan sebagai `MauiAsset`:
+
+```xml
+<!-- Gambar umum (logo, icon, dll) tetap MauiImage -->
+<MauiImage Include="Resources\Images\*" />
+
+<!-- Gambar produk: didaftarkan sebagai MauiAsset dengan logical name -->
+<MauiAsset Include="Resources\Images\items\*"
+            LogicalName="items/%(Filename)%(Extension)" />
+```
+
+#### `Utils/ItemImageConverter.cs` _(baru)_
+
+`IValueConverter` untuk memuat gambar produk dari app bundle berdasarkan ID item.
+
+```csharp
+public object? Convert(object? value, ...) {
+    if (value is string id && !string.IsNullOrEmpty(id))
+        return ImageSource.FromStream(async (ct) => {
+            try { return await FileSystem.OpenAppPackageFileAsync($"items/{id}.jpg"); }
+            catch { return null; }
+        });
+    return null;
+}
+```
+
+- Input binding: `ItemId` (string) dari `ProductDisplay`
+- Output: `ImageSource` via `FileSystem.OpenAppPackageFileAsync`
+- File path di bundle: `items/{id}.jpg`
+- Digunakan di: `CustomerHomePage`, `StoreDetailPage`, `CartPage`, `OrderHistoryPage`, `ProductDetailPage`, `OwnerStoreDetailPage`
+
+---
+
+### Feat: Data Produk dari Database (StoreViewModel)
+
+#### `ViewModels/CustomerViewModel/StoreViewModel.cs` _(diperbarui)_
+
+**`ProductDisplay`** — ditambah fields baru:
+
+| Field baru    | Tipe     | Keterangan                                      |
+| ------------- | -------- | ----------------------------------------------- |
+| `ItemId`      | `string` | ID item dari DB — dipakai oleh converter gambar |
+| `StoreId`     | `string` | ID toko — dipakai untuk grouping saat checkout  |
+| `Category`    | `string` | Kategori item dari DB                           |
+| `ImageSource` | `string` | = `ItemId` — di-pass ke converter               |
+
+**`LoadDummyData()`** — diganti dengan data real dari DB:
+
+```csharp
+private void LoadDummyData() {
+    var storeService = new StoreService();
+    var stores = storeService.GetAllStores();
+    foreach (var store in stores)
+        foreach (var item in store.Items)
+            _allProducts.Add(new ProductDisplay {
+                ItemId = item.Id, ProductName = item.Name,
+                StoreName = store.Name, StoreId = store.StoreId,
+                Category = item.Category, Price = (decimal)item.Price,
+                ImageSource = item.Id, Stock = item.Stock
+            });
+}
+```
+
+---
+
+### Feat: Filter Berdasarkan Kategori (CustomerHomePage)
+
+Sebelumnya chips menampilkan nama toko. Sekarang diganti filter **kategori item**.
+
+#### `ViewModels/CustomerViewModel/StoreViewModel.cs` _(diperbarui)_
+
+| Perubahan        | Sebelum                                | Sesudah                                             |
+| ---------------- | -------------------------------------- | --------------------------------------------------- |
+| Collection chips | `StoreFilters`                         | `CategoryFilters`                                   |
+| Property filter  | `SelectedStore`                        | `SelectedCategory`                                  |
+| Command          | `SelectStoreFilterCommand`             | `SelectCategoryFilterCommand`                       |
+| Builder          | `BuildStoreFilters()` — dari nama toko | `BuildCategoryFilters()` — dari kolom `category` DB |
+| Filter logic     | `p.StoreName == selected`              | `p.Category.Equals(selected, OrdinalIgnoreCase)`    |
+
+`BuildCategoryFilters()`:
+
+- Chip "Semua" selalu di posisi pertama, aktif by default
+- Sisa chips = nilai unik dari `item.Category`, **diurutkan alphabetically**, **deduplikasi ignore case**
+
+#### `Views/VCustomer/CustomerHomePage.xaml` _(diperbarui)_
+
+```xml
+<!-- Sebelum -->
+BindableLayout.ItemsSource="{Binding StoreFilters}"
+Command="{Binding ... SelectStoreFilterCommand}"
+
+<!-- Sesudah -->
+BindableLayout.ItemsSource="{Binding CategoryFilters}"
+Command="{Binding ... SelectCategoryFilterCommand}"
+```
+
+---
+
+### Feat: CartBag — Tambah StoreId & ItemId
+
+#### `Utils/CartBag.cs` _(diperbarui)_
+
+`CartBagEntry` ditambah dua field baru yang dibutuhkan saat checkout ke DB:
+
+```csharp
+public class CartBagEntry {
+    public string ItemId { get; set; }      // ← baru
+    public string StoreId { get; set; }     // ← baru
+    public string ProductName { get; set; }
+    public string StoreName { get; set; }
+    public decimal Price { get; set; }
+    public string ImageSource { get; set; }
+    public int MaxStock { get; set; }
+    public int Qty { get; set; }
+}
+```
+
+Signature `Add()` diperbarui:
+
+```csharp
+// Sebelum
+CartBag.Add(productName, storeName, price, imageSource, maxStock)
+
+// Sesudah
+CartBag.Add(itemId, productName, storeName, storeId, price, imageSource, maxStock)
+```
+
+---
+
+### Feat: OrderHistory — Tambah Status & Badge
+
+#### `Utils/OrderHistory.cs` _(diperbarui)_
+
+**`OrderRecord`** — ditambah fields dan computed properties:
+
+| Property baru           | Tipe     | Keterangan                                               |
+| ----------------------- | -------- | -------------------------------------------------------- |
+| `StoreName`             | `string` | Nama toko order ini                                      |
+| `Status`                | `string` | `"Pending"` atau `"Completed"`                           |
+| `StoreSummary`          | `string` | = `StoreName` (computed)                                 |
+| `StatusText`            | `string` | `"✅ Selesai"` atau `"🕐 Pending"` (computed)            |
+| `StatusBadgeBackground` | `Color`  | Hijau `#DCFCE7` (Completed) / Kuning `#FEF9C3` (Pending) |
+| `StatusTextColor`       | `Color`  | `#16A34A` / `#CA8A04`                                    |
+
+**`OrderItemRecord`** — `StoreName` dihapus (dipindah ke `OrderRecord`).
+
+---
+
+### Feat: DatabaseContext — Checkout & Riwayat Order ke DB
+
+#### `Database/DatabaseContext.cs` _(diperbarui)_
+
+Ditambahkan 4 method baru:
+
+**`InsertOrder(orderId, customerId, storeId, status, createdAt)`**
+
+```sql
+INSERT INTO orders (id, customer_id, store_id, status, created_at)
+VALUES (@id, @cid, @sid, @status, @createdAt)
+```
+
+**`InsertOrderItem(orderId, itemId, itemName, unitPrice, quantity)`**
+
+```sql
+INSERT INTO order_items (order_id, item_id, item_name, unit_price, quantity)
+VALUES (@oid, @iid, @iname, @price, @qty)
+```
+
+**`GetOrdersByCustomer(customerId)`**
+
+```sql
+SELECT o.id, o.store_id, o.status, o.created_at, s.name as store_name
+FROM orders o
+LEFT JOIN stores s ON o.store_id = s.store_id
+WHERE o.customer_id = @cid
+ORDER BY o.created_at DESC
+```
+
+- Mengembalikan `List<OrderRecord>` lengkap dengan items per order
+- Gambar produk diambil dari `item_id` (= nama file gambar)
+
+**`GetUserBalance(userId)`**
+
+```sql
+SELECT balance FROM users WHERE id = @uid
+```
+
+**`GetUser()` — diperbarui**
+
+Query diperluas untuk membaca kolom `balance`:
+
+```sql
+-- Sebelum
+SELECT id, name, email, password, role FROM users ...
+
+-- Sesudah
+SELECT id, name, email, password, role, balance FROM users ...
+```
+
+Semua 3 role (Customer, Owner, Admin) sekarang di-set balance saat konstruksi:
+
+```csharp
+var balance = reader["balance"] == DBNull.Value ? 0m : Convert.ToDecimal(reader["balance"]);
+return new Customer(...) { Balance = balance };
+```
+
+---
+
+### Feat: CartViewModel — Checkout Tersimpan ke DB
+
+#### `ViewModels/CustomerViewModel/CartViewModel.cs` _(diperbarui)_
+
+`Checkout()` diubah dari menyimpan ke `OrderHistory` (in-memory) menjadi menyimpan langsung ke SQLite:
+
+```csharp
+var db = new DatabaseContext();
+var customerId = SessionUser.Current?.Id ?? string.Empty;
+var now = DateTime.Now.ToString("o");
+
+// Satu order per toko (group by StoreId)
+foreach (var group in CartBag.Items.GroupBy(i => i.StoreId)) {
+    var orderId = Guid.NewGuid().ToString();
+    db.InsertOrder(orderId, customerId, group.Key, "Pending", now);
+    foreach (var entry in group)
+        db.InsertOrderItem(orderId, entry.ItemId, entry.ProductName, (int)entry.Price, entry.Qty);
+}
+```
+
+---
+
+### Feat: OrderViewModel — Riwayat dari DB
+
+#### `ViewModels/CustomerViewModel/OrderViewModel.cs` _(diperbarui)_
+
+`RefreshOrders()` diganti dari membaca `OrderHistory` (in-memory) ke DB:
+
+```csharp
+// Sebelum
+var reversed = OrderHistory.Orders.Reverse().ToList();
+Orders = new ObservableCollection<OrderRecord>(reversed);
+
+// Sesudah
+var db = new DatabaseContext();
+var customerId = SessionUser.Current?.Id ?? string.Empty;
+var records = db.GetOrdersByCustomer(customerId);  // sudah urut DESC by created_at
+Orders = new ObservableCollection<OrderRecord>(records);
+```
+
+---
+
+### Feat: ProductDetailPage _(baru)_
+
+#### `ViewModels/CustomerViewModel/ProductDetailViewModel.cs` _(baru)_
+
+Menerima `ProductDisplay` dari konstruktor. Fitur:
+
+| Property                               | Keterangan                               |
+| -------------------------------------- | ---------------------------------------- |
+| `ProductName`, `StoreName`, `Category` | Data produk                              |
+| `PriceFormatted`                       | Format `Rp x.xxx`                        |
+| `StockText`                            | `"Stok: n"`                              |
+| `ImageSource`                          | = `ItemId` untuk converter               |
+| `Quantity` / `QuantityLabel`           | Counter qty (observable)                 |
+| `IsToastVisible`                       | Kontrol toast "Ditambahkan ke keranjang" |
+
+| Command                 | Aksi                                                               |
+| ----------------------- | ------------------------------------------------------------------ |
+| `AddToCartCommand`      | Tambah qty +1 (max = Stock), sync CartBag, tampilkan toast 2 detik |
+| `RemoveFromCartCommand` | Kurangi qty -1 (min = 0), sync CartBag                             |
+
+- Qty awal di-sync dari `CartBag` saat konstruktor dipanggil
+
+#### `Views/VCustomer/ProductDetailPage.xaml` _(baru)_
+
+Layout `Grid` 2 baris (`*, Auto`):
+
+| Baris | Komponen       | Keterangan                                           |
+| ----- | -------------- | ---------------------------------------------------- |
+| 0     | **ScrollView** | Gambar produk besar (h=280) + info card              |
+| 1     | **Footer**     | Counter `[−] qty [+]` + tombol "Tambah ke Keranjang" |
+
+**Konten ScrollView:**
+
+- Gambar produk h=280, `AspectFill`, sudut bawah rounded 24
+- Toast banner hijau "✓ Ditambahkan ke keranjang" (auto-dismiss)
+- Nama produk + harga (bold biru `#3E64FF`)
+- Card toko: icon 🏪 + "Dijual oleh" + nama toko
+- Card stok: 📦 + jumlah stok
+- Card kategori: 🏷️ + nama kategori
+
+**Footer:**
+
+- Tombol `−` abu bulat + label qty + tombol `+` biru bulat
+- Tombol "Tambah ke Keranjang" penuh biru `#3E64FF`
+- Tidak ada tombol "Beli Langsung" — semua pembelian via Cart
+
+#### `Views/VCustomer/ProductDetailPage.xaml.cs` _(baru)_
+
+```csharp
+public ProductDetailPage(ProductDisplay product) {
+    InitializeComponent();
+    BindingContext = new ProductDetailViewModel(product);
+}
+```
+
+---
+
+### Feat: Navigasi ke ProductDetailPage
+
+#### `ViewModels/CustomerViewModel/StoreViewModel.cs` _(diperbarui)_
+
+Ditambahkan `OpenProductDetailCommand`:
+
+```csharp
+public ICommand OpenProductDetailCommand { get; }
+// ...
+OpenProductDetailCommand = new Command<ProductDisplay>(async product =>
+    await Shell.Current.Navigation.PushAsync(new ProductDetailPage(product)));
+```
+
+#### `ViewModels/CustomerViewModel/StoreDetailViewModel.cs` _(diperbarui)_
+
+Ditambahkan `OpenProductDetailCommand` (identik).
+
+#### XAML yang diperbarui
+
+Semua halaman produk ditambahkan `TapGestureRecognizer` pada gambar produk untuk navigasi ke `ProductDetailPage`:
+
+```xml
+<Border.GestureRecognizers>
+    <TapGestureRecognizer
+        Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.OpenProductDetailCommand}"
+        CommandParameter="{Binding .}"/>
+</Border.GestureRecognizers>
+```
+
+File yang diupdate: `CustomerHomePage.xaml`, `StoreDetailPage.xaml`
+
+---
+
+### Feat: ItemImageConverter di Semua Halaman Customer
+
+Semua halaman yang menampilkan gambar produk diperbarui:
+
+| File                    | Perubahan                                                                |
+| ----------------------- | ------------------------------------------------------------------------ |
+| `CustomerHomePage.xaml` | Tambah `xmlns:utils` + `ItemImageConverter` resource + converter binding |
+| `StoreDetailPage.xaml`  | Sama                                                                     |
+| `CartPage.xaml`         | Sama                                                                     |
+| `OrderHistoryPage.xaml` | Sama + status badge dinamis                                              |
+
+```xml
+<!-- Sebelum -->
+<Image Source="{Binding ImageSource}" .../>
+
+<!-- Sesudah -->
+<ContentPage.Resources>
+    <utils:ItemImageConverter x:Key="ItemImageConverter" />
+</ContentPage.Resources>
+...
+<Image Source="{Binding ImageSource, Converter={StaticResource ItemImageConverter}}" .../>
+```
+
+---
+
+### Feat: OrderHistoryPage — Badge Status Dinamis
+
+#### `Views/VCustomer/OrderHistoryPage.xaml` _(diperbarui)_
+
+Badge status sebelumnya hardcoded "✅ Selesai". Sekarang dinamis:
+
+```xml
+<!-- Sebelum -->
+<Border BackgroundColor="#DCFCE7">
+    <Label Text="✅ Selesai" TextColor="#16A34A"/>
+</Border>
+
+<!-- Sesudah -->
+<Border BackgroundColor="{Binding StatusBadgeBackground}">
+    <Label Text="{Binding StatusText}" TextColor="{Binding StatusTextColor}"/>
+</Border>
+```
+
+Hasil: Pending = badge kuning 🕐, Completed = badge hijau ✅.
+
+---
+
+### Feat: CustomerAppShell — Header Nama User Real
+
+#### `Views/VCustomer/CustomerAppShell.xaml` _(diperbarui)_
+
+Header flyout sebelumnya hardcoded "Customer". Sekarang menampilkan data user yang sedang login.
+
+Perubahan teknis: `x:Name` dalam `Shell.FlyoutHeader` tidak menghasilkan field di code-behind pada MAUI. Solusi: gunakan **binding ke properties di Shell itu sendiri**.
+
+```csharp
+// CustomerAppShell.xaml.cs
+public string CustomerName { get; private set; }
+public string CustomerInitial { get; private set; }
+public string CustomerSubtitle { get; private set; }
+
+public CustomerAppShell() {
+    var user = SessionUser.Current;
+    var name = user?.Name ?? "Customer";
+    CustomerName = name;
+    CustomerInitial = name.Length > 0 ? name[0].ToString().ToUpper() : "C";
+    CustomerSubtitle = $"Alo, {name.Split(' ')[0]}! Welcome back! 👋";
+
+    InitializeComponent();
+    BindingContext = this;  // Shell sebagai BindingContext
+
+    Routing.RegisterRoute(nameof(ProductDetailPage), typeof(ProductDetailPage));
+    // ... route lainnya
+}
+```
+
+```xml
+<!-- XAML binding ke properties Shell -->
+<Label Text="{Binding CustomerInitial}" .../>
+<Label Text="{Binding CustomerName}" .../>
+<Label Text="{Binding CustomerSubtitle}" .../>
+```
+
+---
+
+## Update Arsitektur Customer
+
+| Aspek           | Sebelum                              | Sesudah                                         |
+| --------------- | ------------------------------------ | ----------------------------------------------- |
+| Data produk     | In-memory dummy data                 | SQLite DB via `StoreService`                    |
+| Gambar produk   | Path string langsung                 | `MauiAsset` + `ItemImageConverter`              |
+| Filter produk   | By nama toko                         | By kategori item                                |
+| Checkout        | Simpan ke `OrderHistory` (in-memory) | Simpan ke tabel `orders` + `order_items` SQLite |
+| Riwayat order   | Baca dari `OrderHistory` (in-memory) | Baca dari DB `GetOrdersByCustomer()`            |
+| Balance profil  | Selalu 0 (tidak dibaca dari DB)      | Dibaca dari kolom `balance` saat login          |
+| Header AppShell | Hardcoded "Customer"                 | Nama & inisial user dari `SessionUser`          |
+| Detail produk   | Tidak ada halaman terpisah           | `ProductDetailPage` baru                        |
+
+## Status Halaman VCustomer (Update)
+
+| Halaman             | Status     | Keterangan                                                         |
+| ------------------- | ---------- | ------------------------------------------------------------------ |
+| `CustomerHomePage`  | ✅ Selesai | Data dari DB, gambar dari MauiAsset, filter kategori, tap → detail |
+| `CartPage`          | ✅ Selesai | Gambar dengan converter, checkout simpan ke DB                     |
+| `StorePage`         | ✅ Selesai | Data dari DB                                                       |
+| `StoreDetailPage`   | ✅ Selesai | Gambar dengan converter, tap → detail                              |
+| `ProfilePage`       | ✅ Selesai | Balance real dari DB                                               |
+| `OrderHistoryPage`  | ✅ Selesai | Data dari DB, badge status dinamis (Pending/Completed)             |
+| `ProductDetailPage` | ✅ Selesai | Halaman baru — gambar besar, info produk, add to cart              |

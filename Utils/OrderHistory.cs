@@ -6,7 +6,6 @@ namespace AstroBoy.Utils;
 public class OrderItemRecord
 {
     public string ProductName { get; set; } = string.Empty;
-    public string StoreName { get; set; } = string.Empty;
     public string ImageSource { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int Qty { get; set; }
@@ -25,36 +24,24 @@ public class OrderRecord
     // ── Data utama ────────────────────────────────────────────────────────────
     public string OrderId { get; set; } = Guid.NewGuid().ToString();
     public DateTime OrderDate { get; set; } = DateTime.Now;
+    public string StoreName { get; set; } = string.Empty;
+    public string Status { get; set; } = "Pending";
     public List<OrderItemRecord> Items { get; set; } = new();
     public decimal Total { get; set; }
 
     // ── Computed ──────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Ringkasan toko: jika 1 toko → nama toko,
-    /// jika >1 → "Toko A + n toko lainnya".
-    /// </summary>
-    public string StoreSummary
-    {
-        get
-        {
-            var stores = Items.Select(i => i.StoreName).Distinct().ToList();
-            if (stores.Count == 0) return "-";
-            if (stores.Count == 1) return stores[0];
-            return $"{stores[0]} + {stores.Count - 1} toko lainnya";
-        }
-    }
-
-    /// <summary>6 karakter pertama OrderId untuk tampilan di UI.</summary>
-    public string ShortId => OrderId.Length >= 6
-        ? OrderId[..6].ToUpper()
-        : OrderId.ToUpper();
-
-    /// <summary>Label lengkap untuk UI: "Order #XXXXXX"</summary>
+    public string ShortId => OrderId.Length >= 6 ? OrderId[..6].ToUpper() : OrderId.ToUpper();
     public string OrderLabel => $"Order #{ShortId}";
-
     public string TotalFormatted => $"Rp {Total:N0}";
     public string DateFormatted => OrderDate.ToString("dd MMM yyyy, HH:mm");
+    public string StoreSummary => string.IsNullOrWhiteSpace(StoreName) ? "Toko" : StoreName;
+    public string StatusText => Status == "Completed" ? "✅ Selesai" : "🕐 Pending";
+    public Color StatusBadgeBackground => Status == "Completed"
+        ? Color.FromArgb("#DCFCE7")
+        : Color.FromArgb("#FEF9C3");
+    public Color StatusTextColor => Status == "Completed"
+        ? Color.FromArgb("#16A34A")
+        : Color.FromArgb("#CA8A04");
 }
 
 /// <summary>
