@@ -100,7 +100,7 @@ namespace Database
                                 email: reader["email"].ToString()!,
                                 password: reader["password"].ToString()!,
                                 role: reader["role"].ToString()!,
-                                Id: reader["id"].ToString()!
+                                id: reader["id"].ToString()!
                             )
                             { Balance = balance };
                         }
@@ -108,7 +108,7 @@ namespace Database
                         {
                             return new Owner
                             (
-                                Id: reader["id"].ToString()!,
+                                id: reader["id"].ToString()!,
                                 name: reader["name"].ToString()!,
                                 email: reader["email"].ToString()!,
                                 password: reader["password"].ToString()!,
@@ -120,7 +120,7 @@ namespace Database
                         {
                             return new Customer
                             (
-                                Id: reader["id"].ToString()!,
+                                id: reader["id"].ToString()!,
                                 name: reader["name"].ToString()!,
                                 email: reader["email"].ToString()!,
                                 password: reader["password"].ToString()!,
@@ -202,7 +202,8 @@ namespace Database
                         new Owner(
                             name: reader["name"].ToString()!,
                             email: reader["email"].ToString()!,
-                            password: reader["password"].ToString()!
+                            password: reader["password"].ToString()!,
+                            id: reader["id"].ToString()!
                         )
                     );
                 }
