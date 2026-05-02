@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Input;
 using AstroBoy.Models;
 using AstroBoy.Services;
+using AstroBoy.Views.VAdmin;
 
 namespace AstroBoy.ViewModels.AdminViewModel
 {
@@ -24,7 +25,10 @@ namespace AstroBoy.ViewModels.AdminViewModel
 
         private async void OnViewStores(Owner owner)
         {
-            await Shell.Current.GoToAsync($"AdminOwnerStoresPage?OwnerId={owner.Id}");
+            Console.WriteLine($"CLICK OWNER ID: {owner.Id}");
+            Console.WriteLine($"CLICK EMAIL ID: {owner.Email}");
+            await Task.Delay(50);
+            await Shell.Current.GoToAsync($"{nameof(AdminOwnerStoresPage)}?OwnerId={owner.Id}");
         }
     }
 }
