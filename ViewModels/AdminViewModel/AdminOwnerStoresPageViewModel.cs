@@ -7,34 +7,43 @@ using AstroBoy.Models;
 using AstroBoy.Services;
 using AstroBoy.Views.VAdmin;
 
-namespace AstroBoy.ViewModels.AdminViewModel
+[QueryProperty(nameof(OwnerId), "OwnerId")]
+public class AdminOwnerStoresViewModel
 {
-    [QueryProperty(nameof(OwnerId), "OwnerId")]
-    public class AdminOwnerStoresViewModel
+    private readonly StoreService _service;
+
+    private string ownerId;
+    public string OwnerId
     {
-        private readonly StoreService _service;
-
-        public string OwnerId { get; set; }
-        public ObservableCollection<Store> Stores { get; set; }
-
-        public ICommand ViewItemsCommand => new Command<Store>(async (store) =>
+        get => ownerId;
+        set
         {
-            await Shell.Current.GoToAsync($"{nameof(AdminStoreItemsPage)}?StoreId={store.StoreId}");
-        });
-
-        public AdminOwnerStoresViewModel()
-        {
-            _service = new StoreService();
-            Stores = new ObservableCollection<Store>();
+            ownerId = value;
+            System.Diagnostics.Debug.WriteLine($"OwnerId SET: {ownerId}");
+            LoadData();
         }
+    }
 
-        public void LoadData()
-        {
-            var data = _service.GetStoresByOwner(OwnerId.ToString());
+    public ObservableCollection<Store> Stores { get; set; }
 
-            Stores.Clear();
-            foreach (var item in data)
-                Stores.Add(item);
-        }
+    public ICommand ViewItemsCommand => new Command<Store>(async (store) =>
+    {
+        await Shell.Current.GoToAsync($"{nameof(AdminStoreItemsPage)}?StoreId={store.StoreId}");
+    });
+
+    public AdminOwnerStoresViewModel()
+    {
+        Console.WriteLine($"OwnerId: {OwnerId}");
+        _service = new StoreService();
+        Stores = new ObservableCollection<Store>();
+    }
+
+    public void LoadData()
+    {
+        var data = _service.GetStoresByOwner(OwnerId);
+
+        Stores.Clear();
+        foreach (var item in data)
+            Stores.Add(item);
     }
 }

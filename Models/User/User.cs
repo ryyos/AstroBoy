@@ -11,9 +11,9 @@ public abstract class User
     public string Role { get; set; }
     public decimal Balance { get; set; }
 
-    public User(string name, string email, string password, string role, string? Id = null)
+    public User(string name, string email, string password, string role, string? id = null)
     {
-        Id = Id ?? Encrypts.Md5Hash(name + email);
+        Id = id ?? Encrypts.Md5Hash(name + email);
         Name = name;
         Email = email;
         Password = password;
