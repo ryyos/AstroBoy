@@ -116,6 +116,65 @@
 | Framework       | .NET MAUI, .NET 10, C# 14                                                                           |
 | Pattern         | MVVM — `BaseViewModel : INotifyPropertyChanged`                                                     |
 | Navigasi        | `NavigationPage` + `PushAsync/PopAsync` (Owner & Customer); `AppShell` (Admin)                      |
-| Data            | In-memory dummy data, `static readonly` di `StoreService`                                           |
+| Data            | SQLite via `DatabaseContext` (persisten); in-memory `_stores` sebagai cache per-session             |
 | Tipe Saldo      | `decimal` (presisi finansial)                                                                       |
 | Namespace alias | Wajib digunakan di semua file dalam namespace `*.Owner` yang mereferensikan `AstroBoy.Models.Owner` |
+
+---
+
+## Feat: Koneksi Owner ke Database (SQLite)
+
+### Root Cause
+
+- Semua operasi CRUD toko dan item Owner sebelumnya hanya menyimpan data **in-memory** (tidak persisten). Setelah aplikasi di-restart, data hilang.
+
+### Perubahan
+
+#### `Database/DatabaseContext.cs`
+
+Ditambahkan 7 method baru untuk keperluan Owner:
+
+| Method | Keterangan |
+| --- | --- |
+| `GetItemsForStore(storeId)` | Memuat ulang item satu toko dari DB (public wrapper dari private method) |
+| `InsertStore(Store)` | INSERT baris baru ke tabel `stores` |
+| `UpdateStore(Store)` | UPDATE nama, alamat, telepon toko di DB |
+| `DeleteStore(storeId)` | DELETE toko + cascade DELETE semua item milik toko tersebut |
+| `InsertItem(Item)` | INSERT item baru ke tabel `items` |
+| `UpdateItem(Item)` | UPDATE nama, harga, stok, kategori item di DB |
+| `DeleteItem(itemId)` | DELETE item dari tabel `items` |
+
+#### `Services/StoreService.cs`
+
+Semua method mutasi kini memanggil DB **sebelum** memperbarui in-memory list:
+
+- `AddStore` → `db.InsertStore` + `_stores.Add`
+- `UpdateStore` → `db.UpdateStore` + update properti in-memory
+- `DeleteStore` → `db.DeleteStore` (cascade) + `_stores.Remove`
+- `AddItem` → `db.InsertItem` + `store.Items.Add`
+- `UpdateItem` → `db.UpdateItem` + update properti in-memory
+- `DeleteItem` → `db.DeleteItem` + `store.Items.Remove`
+
+Ditambahkan method baru:
+- `GetFreshItemsByStoreId(storeId)` — reload item langsung dari DB dan memperbarui cache in-memory toko tersebut; dipakai `RefreshItems` di ViewModel agar data selalu sinkron setelah navigasi dari form add/edit item.
+
+#### `ViewModels/OwnerViewModel/OwnerStoreDetailViewModel.cs`
+
+- `RefreshItems()` diubah untuk menggunakan `_storeService.GetFreshItemsByStoreId(Store.StoreId!)` alih-alih `Store.Items` (yang bisa stale setelah navigasi ke halaman form).
+
+#### `ViewModels/OwnerViewModel/OwnerItemFormViewModel.cs`
+
+- ID item baru sebelumnya hardcoded `"68767887"`. Diubah menjadi `DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString()` agar setiap item punya ID unik (format 13-digit numerik, konsisten dengan data seed yang ada).
+
+### Ringkasan Alur Data Owner (setelah fix)
+
+```
+DB (astroboy.sqlite)
+    ↕ load saat StoreService dibuat
+_stores (static cache)
+    ↕ diperbarui sinkron oleh setiap operasi CRUD
+ObservableCollection (UI)
+    ↑ diperbarui oleh ViewModel setelah setiap operasi
+```
+
+Item detail page kini memanggil `GetFreshItemsByStoreId` (baca ulang DB) setiap kali `OnAppearing`, sehingga perubahan dari halaman form langsung terlihat tanpa perlu restart.

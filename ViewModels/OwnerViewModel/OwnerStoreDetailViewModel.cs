@@ -22,7 +22,7 @@ public class OwnerStoreDetailViewModel : BaseViewModel
     public void RefreshItems()
     {
         Items.Clear();
-        foreach (var item in Store.Items)
+        foreach (var item in _storeService.GetFreshItemsByStoreId(Store.StoreId!))
             Items.Add(item);
     }
 

@@ -400,6 +400,101 @@ namespace Database
             return items;
         }
 
+        // ── Get Items for Store (public) ─────────────────────────────────────
+        public List<Item> GetItemsForStore(string storeId)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            return GetItemsByStoreId(connection, storeId);
+        }
+
+        // ── Insert Store ──────────────────────────────────────────────────────
+        public void InsertStore(Store store)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "INSERT INTO stores (store_id, owner_id, name, address, phone) VALUES (@sid, @oid, @name, @addr, @phone)",
+                connection);
+            cmd.Parameters.AddWithValue("@sid", store.StoreId);
+            cmd.Parameters.AddWithValue("@oid", store.OwnerId);
+            cmd.Parameters.AddWithValue("@name", store.Name);
+            cmd.Parameters.AddWithValue("@addr", (object?)store.Address ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@phone", (object?)store.Phone ?? DBNull.Value);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Update Store ──────────────────────────────────────────────────────
+        public void UpdateStore(Store store)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "UPDATE stores SET name = @name, address = @addr, phone = @phone WHERE store_id = @sid",
+                connection);
+            cmd.Parameters.AddWithValue("@sid", store.StoreId);
+            cmd.Parameters.AddWithValue("@name", store.Name);
+            cmd.Parameters.AddWithValue("@addr", (object?)store.Address ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@phone", (object?)store.Phone ?? DBNull.Value);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Delete Store (cascade delete items) ───────────────────────────────
+        public void DeleteStore(string storeId)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var delItems = new SqliteCommand("DELETE FROM items WHERE store_id = @sid", connection);
+            delItems.Parameters.AddWithValue("@sid", storeId);
+            delItems.ExecuteNonQuery();
+            var delStore = new SqliteCommand("DELETE FROM stores WHERE store_id = @sid", connection);
+            delStore.Parameters.AddWithValue("@sid", storeId);
+            delStore.ExecuteNonQuery();
+        }
+
+        // ── Insert Item ───────────────────────────────────────────────────────
+        public void InsertItem(Item item)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "INSERT INTO items (id, name, price, stock, category, store_id) VALUES (@id, @name, @price, @stock, @cat, @sid)",
+                connection);
+            cmd.Parameters.AddWithValue("@id", item.Id);
+            cmd.Parameters.AddWithValue("@name", item.Name);
+            cmd.Parameters.AddWithValue("@price", (int)item.Price);
+            cmd.Parameters.AddWithValue("@stock", item.Stock);
+            cmd.Parameters.AddWithValue("@cat", item.Category);
+            cmd.Parameters.AddWithValue("@sid", item.StoreId);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Update Item ───────────────────────────────────────────────────────
+        public void UpdateItem(Item item)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "UPDATE items SET name = @name, price = @price, stock = @stock, category = @cat WHERE id = @id",
+                connection);
+            cmd.Parameters.AddWithValue("@id", item.Id);
+            cmd.Parameters.AddWithValue("@name", item.Name);
+            cmd.Parameters.AddWithValue("@price", (int)item.Price);
+            cmd.Parameters.AddWithValue("@stock", item.Stock);
+            cmd.Parameters.AddWithValue("@cat", item.Category);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Delete Item ───────────────────────────────────────────────────────
+        public void DeleteItem(string itemId)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand("DELETE FROM items WHERE id = @id", connection);
+            cmd.Parameters.AddWithValue("@id", itemId);
+            cmd.ExecuteNonQuery();
+        }
+
         // ── Get user balance from DB ───────────────────────────────────────────
         public decimal GetUserBalance(string userId)
         {

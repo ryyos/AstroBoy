@@ -62,7 +62,7 @@ public class OwnerItemFormViewModel : BaseViewModel
         {
             var newItem = new Item
             {
-                Id = "68767887",
+                Id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString(),
                 Name = Name,
                 Price = price,
                 Stock = stock,

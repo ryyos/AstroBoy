@@ -24,11 +24,24 @@ public class StoreService
     public Store? GetStoreById(string storeId)
         => _stores!.FirstOrDefault(s => s.StoreId == storeId);
 
+    // Reload items langsung dari DB (dipakai setelah form add/edit item)
+    public List<Item> GetFreshItemsByStoreId(string storeId)
+    {
+        var freshItems = db.GetItemsForStore(storeId);
+        var store = GetStoreById(storeId);
+        if (store != null) store.Items = freshItems;
+        return freshItems;
+    }
+
     public void AddItem(string storeId, Item item)
-        => GetStoreById(storeId)?.Items!.Add(item);
+    {
+        db.InsertItem(item);
+        GetStoreById(storeId)?.Items!.Add(item);
+    }
 
     public void UpdateItem(Item updatedItem)
     {
+        db.UpdateItem(updatedItem);
         foreach (var store in _stores!)
         {
             var item = store!.Items!.FirstOrDefault(i => i.Id == updatedItem.Id);
@@ -43,15 +56,21 @@ public class StoreService
 
     public void DeleteItem(string itemId, string storeId)
     {
+        db.DeleteItem(itemId);
         var store = GetStoreById(storeId);
         var item = store?.Items!.FirstOrDefault(i => i.Id == itemId);
         if (item != null) store!.Items!.Remove(item);
     }
 
-    public void AddStore(Store store) => _stores!.Add(store);
+    public void AddStore(Store store)
+    {
+        db.InsertStore(store);
+        _stores!.Add(store);
+    }
 
     public void UpdateStore(Store updatedStore)
     {
+        db.UpdateStore(updatedStore);
         var store = _stores!.FirstOrDefault(s => s.StoreId == updatedStore.StoreId);
         if (store == null) return;
         store.Name = updatedStore.Name;
@@ -61,6 +80,7 @@ public class StoreService
 
     public void DeleteStore(string storeId)
     {
+        db.DeleteStore(storeId);
         var store = _stores!.FirstOrDefault(s => s.StoreId == storeId);
         if (store != null) _stores!.Remove(store);
     }
