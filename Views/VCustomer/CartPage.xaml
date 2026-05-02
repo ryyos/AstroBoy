@@ -14,221 +14,341 @@
     <!-- ═══════════════════════════════════════════════════════════
          LAYOUT UTAMA: List Item (*) + Footer Total/Checkout (Auto)
     ════════════════════════════════════════════════════════════════ -->
-    <Grid RowDefinitions="*,Auto">
+    <Grid>
 
-        <!-- ── Row 0: Isi Keranjang atau Empty State ──────────── -->
-        <Grid Grid.Row="0">
+        <!-- ── Inner grid: content rows ──────────────────────────── -->
+        <Grid RowDefinitions="Auto,*,Auto">
 
-            <!-- Empty state (tampil jika keranjang kosong) -->
-            <VerticalStackLayout IsVisible="{Binding IsEmpty}"
-                                 VerticalOptions="Center"
-                                 HorizontalOptions="Center"
-                                 Spacing="12">
-                <Label Text="🛒"
-                       FontSize="64"
-                       HorizontalOptions="Center"/>
-                <Label Text="Keranjang Kosong"
-                       FontSize="18"
+            <!-- Row 0: Toast notification (hidden by default) -->
+            <Border Grid.Row="0"
+                    IsVisible="{Binding IsToastVisible}"
+                    BackgroundColor="#22C55E"
+                    Padding="16,12"
+                    Margin="16,8">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <Label Text="{Binding ToastMessage}"
+                       TextColor="White"
                        FontAttributes="Bold"
-                       TextColor="#1F2937"
+                       FontSize="14"
                        HorizontalOptions="Center"/>
-                <Label Text="Yuk tambahkan produk dari halaman utama!"
-                       FontSize="13"
-                       TextColor="#6B7280"
-                       HorizontalOptions="Center"
-                       HorizontalTextAlignment="Center"
-                       Margin="32,0"/>
-            </VerticalStackLayout>
+            </Border>
 
-            <!-- List item keranjang -->
-            <CollectionView ItemsSource="{Binding CartItems}"
-                            IsVisible="{Binding HasItems}"
-                            Margin="16,12,16,4">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
+            <!-- Row 1: Isi Keranjang atau Empty State -->
+            <Grid Grid.Row="1">
 
-                        <!-- Card per item -->
-                        <Border BackgroundColor="White"
-                                StrokeThickness="0"
-                                Margin="0,0,0,10">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="12"/>
-                            </Border.StrokeShape>
-                            <Border.Shadow>
-                                <Shadow Brush="#000000"
-                                        Offset="0,2"
-                                        Radius="8"
-                                        Opacity="0.07"/>
-                            </Border.Shadow>
+                <!-- Empty state (tampil jika keranjang kosong) -->
+                <VerticalStackLayout IsVisible="{Binding IsEmpty}"
+                                     VerticalOptions="Center"
+                                     HorizontalOptions="Center"
+                                     Spacing="12">
+                    <Label Text="🛒"
+                           FontSize="64"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Keranjang Kosong"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1F2937"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Yuk tambahkan produk dari halaman utama!"
+                           FontSize="13"
+                           TextColor="#6B7280"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           Margin="32,0"/>
+                </VerticalStackLayout>
 
-                            <Grid ColumnDefinitions="88,*" Padding="10,10,10,10">
+                <!-- List item keranjang -->
+                <CollectionView ItemsSource="{Binding CartItems}"
+                                IsVisible="{Binding HasItems}"
+                                Margin="16,12,16,4">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
 
-                                <!-- Gambar produk -->
-                                <Border Grid.Column="0"
-                                        StrokeThickness="0"
-                                        WidthRequest="80"
-                                        HeightRequest="80"
-                                        VerticalOptions="Start">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="8"/>
-                                    </Border.StrokeShape>
-                                    <Image Source="{Binding ImageSource, Converter={StaticResource ItemImageConverter}}"
-                                           Aspect="AspectFill"/>
-                                </Border>
+                            <!-- Card per item -->
+                            <Border BackgroundColor="White"
+                                    StrokeThickness="0"
+                                    Margin="0,0,0,10">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12"/>
+                                </Border.StrokeShape>
+                                <Border.Shadow>
+                                    <Shadow Brush="#000000"
+                                            Offset="0,2"
+                                            Radius="8"
+                                            Opacity="0.07"/>
+                                </Border.Shadow>
 
-                                <!-- Info produk + kontrol -->
-                                <Grid Grid.Column="1"
-                                      RowDefinitions="Auto,Auto,Auto,Auto"
-                                      RowSpacing="3"
-                                      Margin="10,0,0,0">
+                                <Grid ColumnDefinitions="88,*" Padding="10,10,10,10">
 
-                                    <!-- Nama produk -->
-                                    <Label Grid.Row="0"
-                                           Text="{Binding ProductName}"
-                                           FontSize="14"
-                                           FontAttributes="Bold"
-                                           TextColor="#1F2937"
-                                           LineBreakMode="TailTruncation"/>
+                                    <!-- Gambar produk -->
+                                    <Border Grid.Column="0"
+                                            StrokeThickness="0"
+                                            WidthRequest="80"
+                                            HeightRequest="80"
+                                            VerticalOptions="Start">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8"/>
+                                        </Border.StrokeShape>
+                                        <Image Source="{Binding ImageSource, Converter={StaticResource ItemImageConverter}}"
+                                               Aspect="AspectFill"/>
+                                    </Border>
 
-                                    <!-- Nama toko -->
-                                    <Label Grid.Row="1"
-                                           Text="{Binding StoreName}"
-                                           FontSize="12"
-                                           TextColor="#6B7280"/>
+                                    <!-- Info produk + kontrol -->
+                                    <Grid Grid.Column="1"
+                                          RowDefinitions="Auto,Auto,Auto,Auto"
+                                          RowSpacing="3"
+                                          Margin="10,0,0,0">
 
-                                    <!-- Harga satuan -->
-                                    <Label Grid.Row="2"
-                                           Text="{Binding PriceFormatted}"
-                                           FontSize="13"
-                                           FontAttributes="Bold"
-                                           TextColor="#3E64FF"
-                                           Margin="0,2,0,0"/>
-
-                                    <!-- Row: [-] [qty] [+] | subtotal | Hapus -->
-                                    <Grid Grid.Row="3"
-                                          ColumnDefinitions="Auto,Auto,Auto,*,Auto"
-                                          Margin="0,8,0,0"
-                                          VerticalOptions="Center">
-
-                                        <!-- Tombol kurangi -->
-                                        <Button Grid.Column="0"
-                                                Text="-"
-                                                Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.DecrementCommand}"
-                                                CommandParameter="{Binding .}"
-                                                WidthRequest="30"
-                                                HeightRequest="30"
-                                                CornerRadius="15"
-                                                BackgroundColor="#3E64FF"
-                                                TextColor="White"
-                                                FontAttributes="Bold"
-                                                FontSize="16"
-                                                Padding="0"/>
-
-                                        <!-- Counter qty -->
-                                        <Label Grid.Column="1"
-                                               Text="{Binding QtyLabel}"
+                                        <!-- Nama produk -->
+                                        <Label Grid.Row="0"
+                                               Text="{Binding ProductName}"
                                                FontSize="14"
                                                FontAttributes="Bold"
                                                TextColor="#1F2937"
-                                               WidthRequest="32"
-                                               HorizontalTextAlignment="Center"
-                                               VerticalOptions="Center"/>
+                                               LineBreakMode="TailTruncation"/>
 
-                                        <!-- Tombol tambah -->
-                                        <Button Grid.Column="2"
-                                                Text="+"
-                                                Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.IncrementCommand}"
-                                                CommandParameter="{Binding .}"
-                                                WidthRequest="30"
-                                                HeightRequest="30"
-                                                CornerRadius="15"
-                                                BackgroundColor="#3E64FF"
-                                                TextColor="White"
-                                                FontAttributes="Bold"
-                                                FontSize="16"
-                                                Padding="0"/>
-
-                                        <!-- Subtotal item -->
-                                        <Label Grid.Column="3"
-                                               Text="{Binding SubtotalFormatted}"
+                                        <!-- Nama toko -->
+                                        <Label Grid.Row="1"
+                                               Text="{Binding StoreName}"
                                                FontSize="12"
+                                               TextColor="#6B7280"/>
+
+                                        <!-- Harga satuan -->
+                                        <Label Grid.Row="2"
+                                               Text="{Binding PriceFormatted}"
+                                               FontSize="13"
                                                FontAttributes="Bold"
-                                               TextColor="#1F2937"
-                                               HorizontalOptions="End"
-                                               VerticalOptions="Center"
-                                               Margin="6,0,4,0"/>
+                                               TextColor="#3E64FF"
+                                               Margin="0,2,0,0"/>
 
-                                        <!-- Tombol hapus -->
-                                        <Button Grid.Column="4"
-                                                Text="✕"
-                                                Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.RemoveCommand}"
-                                                CommandParameter="{Binding .}"
-                                                WidthRequest="30"
-                                                HeightRequest="30"
-                                                CornerRadius="15"
-                                                BackgroundColor="#FEE2E2"
-                                                TextColor="#EF4444"
-                                                FontAttributes="Bold"
-                                                FontSize="13"
-                                                Padding="0"/>
+                                        <!-- Row: [-] [qty] [+] | subtotal | Hapus -->
+                                        <Grid Grid.Row="3"
+                                              ColumnDefinitions="Auto,Auto,Auto,*,Auto"
+                                              Margin="0,8,0,0"
+                                              VerticalOptions="Center">
+
+                                            <!-- Tombol kurangi -->
+                                            <Button Grid.Column="0"
+                                                    Text="-"
+                                                    Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.DecrementCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    WidthRequest="30"
+                                                    HeightRequest="30"
+                                                    CornerRadius="15"
+                                                    BackgroundColor="#3E64FF"
+                                                    TextColor="White"
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    Padding="0"/>
+
+                                            <!-- Counter qty -->
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding QtyLabel}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#1F2937"
+                                                   WidthRequest="32"
+                                                   HorizontalTextAlignment="Center"
+                                                   VerticalOptions="Center"/>
+
+                                            <!-- Tombol tambah -->
+                                            <Button Grid.Column="2"
+                                                    Text="+"
+                                                    Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.IncrementCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    WidthRequest="30"
+                                                    HeightRequest="30"
+                                                    CornerRadius="15"
+                                                    BackgroundColor="#3E64FF"
+                                                    TextColor="White"
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    Padding="0"/>
+
+                                            <!-- Subtotal item -->
+                                            <Label Grid.Column="3"
+                                                   Text="{Binding SubtotalFormatted}"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#1F2937"
+                                                   HorizontalOptions="End"
+                                                   VerticalOptions="Center"
+                                                   Margin="6,0,4,0"/>
+
+                                            <!-- Tombol hapus -->
+                                            <Button Grid.Column="4"
+                                                    Text="✕"
+                                                    Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.RemoveCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    WidthRequest="30"
+                                                    HeightRequest="30"
+                                                    CornerRadius="15"
+                                                    BackgroundColor="#FEE2E2"
+                                                    TextColor="#EF4444"
+                                                    FontAttributes="Bold"
+                                                    FontSize="13"
+                                                    Padding="0"/>
+                                        </Grid>
                                     </Grid>
+
                                 </Grid>
+                            </Border>
 
-                            </Grid>
-                        </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            </Grid>
+
+            <!-- Row 2: Footer — Total + Tombol Checkout -->
+            <Border Grid.Row="2"
+                    BackgroundColor="White"
+                    StrokeThickness="0"
+                    Padding="16,14,16,20">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20,20,0,0"/>
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#000000"
+                            Offset="0,-2"
+                            Radius="12"
+                            Opacity="0.08"/>
+                </Border.Shadow>
+
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="14">
+
+                    <!-- Baris total -->
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0"
+                               Text="Total Belanja"
+                               FontSize="15"
+                               TextColor="#6B7280"
+                               VerticalOptions="Center"/>
+                        <Label Grid.Column="1"
+                               Text="{Binding TotalFormatted}"
+                               FontSize="20"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937"/>
+                    </Grid>
+
+                    <!-- Tombol Checkout -->
+                    <Button Grid.Row="1"
+                            Text="CHECKOUT"
+                            Command="{Binding CheckoutCommand}"
+                            IsEnabled="{Binding HasItems}"
+                            BackgroundColor="#3E64FF"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            CornerRadius="12"
+                            HeightRequest="50"/>
+
+                </Grid>
+            </Border>
 
         </Grid>
 
-        <!-- ── Row 1: Footer — Total + Tombol Checkout ─────────── -->
-        <Border Grid.Row="1"
-                BackgroundColor="White"
-                StrokeThickness="0"
-                Padding="16,14,16,20">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="20,20,0,0"/>
-            </Border.StrokeShape>
-            <Border.Shadow>
-                <Shadow Brush="#000000"
-                        Offset="0,-2"
-                        Radius="12"
-                        Opacity="0.08"/>
-            </Border.Shadow>
+        <!-- ══════════════════════════════════════════════════════════
+             OVERLAY: Konfirmasi Checkout
+        ══════════════════════════════════════════════════════════════ -->
+        <Grid IsVisible="{Binding IsCheckoutOverlayVisible}"
+              BackgroundColor="#CC000000">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding HideCheckoutOverlayCommand}"/>
+            </Grid.GestureRecognizers>
 
-            <Grid RowDefinitions="Auto,Auto" RowSpacing="14">
+            <Border BackgroundColor="White"
+                    StrokeThickness="0"
+                    VerticalOptions="Center"
+                    Margin="24,0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="20"/>
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="#000000" Offset="0,6" Radius="24" Opacity="0.15"/>
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer/>
+                </Border.GestureRecognizers>
 
-                <!-- Baris total -->
-                <Grid Grid.Row="0"
-                      ColumnDefinitions="*,Auto">
-                    <Label Grid.Column="0"
-                           Text="Total Belanja"
-                           FontSize="15"
-                           TextColor="#6B7280"
-                           VerticalOptions="Center"/>
-                    <Label Grid.Column="1"
-                           Text="{Binding TotalFormatted}"
+                <VerticalStackLayout Spacing="0" Padding="24">
+
+                    <!-- Title -->
+                    <Label Text="Konfirmasi Pesanan"
                            FontSize="20"
                            FontAttributes="Bold"
-                           TextColor="#1F2937"/>
-                </Grid>
+                           TextColor="#1F2937"
+                           HorizontalOptions="Center"/>
 
-                <!-- Tombol Checkout -->
-                <Button Grid.Row="1"
-                        Text="CHECKOUT"
-                        Command="{Binding CheckoutCommand}"
-                        IsEnabled="{Binding HasItems}"
-                        BackgroundColor="#3E64FF"
-                        TextColor="White"
-                        FontAttributes="Bold"
-                        FontSize="15"
-                        CornerRadius="12"
-                        HeightRequest="50"/>
+                    <BoxView HeightRequest="1" BackgroundColor="#F3F4F6" Margin="0,16,0,16"/>
 
-            </Grid>
-        </Border>
+                    <!-- Summary rows -->
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                        <Label Grid.Column="0" Text="Total Belanja" FontSize="14" TextColor="#6B7280" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="{Binding TotalFormatted}" FontSize="14" FontAttributes="Bold" TextColor="#1F2937"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                        <Label Grid.Column="0" Text="Saldo Kamu" FontSize="14" TextColor="#6B7280" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="{Binding CurrentBalanceFormatted}" FontSize="14" FontAttributes="Bold" TextColor="#1F2937"/>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" BackgroundColor="#F3F4F6" Margin="0,8,0,12"/>
+
+                    <!-- Saldo cukup: tampilkan sisa -->
+                    <Grid IsVisible="{Binding IsSaldoCukup}" ColumnDefinitions="*,Auto" Margin="0,0,0,4">
+                        <Label Grid.Column="0" Text="Sisa Saldo" FontSize="14" TextColor="#6B7280" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="{Binding SisaSaldoFormatted}" FontSize="14" FontAttributes="Bold" TextColor="#22C55E"/>
+                    </Grid>
+
+                    <!-- Saldo tidak cukup: tampilkan kekurangan + warning -->
+                    <Border IsVisible="{Binding IsNotSaldoCukup}"
+                            BackgroundColor="#FEF2F2"
+                            Padding="12,10"
+                            Margin="0,0,0,8">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10"/>
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Saldo Tidak Mencukupi"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="#DC2626"/>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="Kekurangan" FontSize="13" TextColor="#EF4444"/>
+                                <Label Grid.Column="1" Text="{Binding KuranganFormatted}" FontSize="13" FontAttributes="Bold" TextColor="#EF4444"/>
+                            </Grid>
+                            <Label Text="Silakan top up saldo di halaman Profil."
+                                   FontSize="12"
+                                   TextColor="#EF4444"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Confirm button (disabled jika saldo kurang) -->
+                    <Button Text="Pesan Sekarang"
+                            Command="{Binding ConfirmCheckoutCommand}"
+                            IsEnabled="{Binding IsSaldoCukup}"
+                            BackgroundColor="#3E64FF"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            CornerRadius="12"
+                            HeightRequest="50"
+                            Margin="0,12,0,8"/>
+
+                    <Button Text="Batal"
+                            Command="{Binding HideCheckoutOverlayCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="#6B7280"
+                            FontSize="14"
+                            HeightRequest="40"
+                            Margin="0,0,0,4"/>
+
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
 
     </Grid>
 
