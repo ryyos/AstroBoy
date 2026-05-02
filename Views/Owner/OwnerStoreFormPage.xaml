@@ -1,29 +1,163 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="AstroBoy.Views.Owner.OwnerStoreFormPage"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             BackgroundColor="#F8F9FF">
 
-    <VerticalStackLayout Padding="16" Spacing="12">
+    <Grid RowDefinitions="*,Auto">
 
-        <Label Text="Nama Toko" />
-        <Entry Text="{Binding Name}" Placeholder="Contoh: Toko Elektronik Jaya" />
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20,24,20,16" Spacing="16">
 
-        <Label Text="Alamat" />
-        <Entry Text="{Binding Address}" Placeholder="Contoh: Jl. Sudirman No.1" />
+                <!-- ── Form Header ──────────────────────────────────────── -->
+                <VerticalStackLayout Spacing="4" Margin="0,0,0,8">
+                    <Label Text="{Binding Title}"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="#1F2937"/>
+                    <Label Text="Isi informasi toko di bawah ini"
+                           FontSize="13"
+                           TextColor="#6B7280"/>
+                </VerticalStackLayout>
 
-        <Label Text="Nomor Telepon" />
-        <Entry Text="{Binding Phone}"
-               Placeholder="Contoh: 08123456789"
-               Keyboard="Telephone" />
+                <!-- ── Nama Toko ─────────────────────────────────────────── -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Nama Toko"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           TextColor="#374151"/>
+                    <Border BackgroundColor="White"
+                            StrokeThickness="1"
+                            Stroke="#E5E7EB"
+                            Padding="14,0"
+                            HeightRequest="50">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12"/>
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <Label Grid.Column="0"
+                                   Text="🏪"
+                                   FontSize="16"
+                                   VerticalOptions="Center"/>
+                            <Entry Grid.Column="1"
+                                   Text="{Binding Name}"
+                                   Placeholder="Contoh: Toko Elektronik Jaya"
+                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="#1F2937"
+                                   FontSize="14"
+                                   BackgroundColor="Transparent"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
 
-        <Label Text="{Binding ErrorMessage}"
-               TextColor="Red"
-               IsVisible="{Binding HasError}" />
+                <!-- ── Alamat ─────────────────────────────────────────────── -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Alamat"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           TextColor="#374151"/>
+                    <Border BackgroundColor="White"
+                            StrokeThickness="1"
+                            Stroke="#E5E7EB"
+                            Padding="14,0"
+                            HeightRequest="50">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12"/>
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <Label Grid.Column="0"
+                                   Text="📍"
+                                   FontSize="16"
+                                   VerticalOptions="Center"/>
+                            <Entry Grid.Column="1"
+                                   Text="{Binding Address}"
+                                   Placeholder="Contoh: Jl. Sudirman No.1"
+                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="#1F2937"
+                                   FontSize="14"
+                                   BackgroundColor="Transparent"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
 
-        <Button Text="Simpan"
-                Command="{Binding SaveCommand}"
-                Margin="0,8,0,0" />
+                <!-- ── Nomor Telepon ──────────────────────────────────────── -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Nomor Telepon"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           TextColor="#374151"/>
+                    <Border BackgroundColor="White"
+                            StrokeThickness="1"
+                            Stroke="#E5E7EB"
+                            Padding="14,0"
+                            HeightRequest="50">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12"/>
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <Label Grid.Column="0"
+                                   Text="📞"
+                                   FontSize="16"
+                                   VerticalOptions="Center"/>
+                            <Entry Grid.Column="1"
+                                   Text="{Binding Phone}"
+                                   Placeholder="Contoh: 08123456789"
+                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="#1F2937"
+                                   FontSize="14"
+                                   Keyboard="Telephone"
+                                   BackgroundColor="Transparent"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
 
-    </VerticalStackLayout>
+                <!-- ── Error Message ─────────────────────────────────────── -->
+                <Border IsVisible="{Binding HasError}"
+                        BackgroundColor="#FEF2F2"
+                        StrokeThickness="1"
+                        Stroke="#FECACA"
+                        Padding="14,10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10"/>
+                    </Border.StrokeShape>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="⚠️" FontSize="14" VerticalOptions="Center"/>
+                        <Label Grid.Column="1"
+                               Text="{Binding ErrorMessage}"
+                               TextColor="#EF4444"
+                               FontSize="13"
+                               VerticalOptions="Center"/>
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ── Save Button Footer ──────────────────────────────────────── -->
+        <Border Grid.Row="1"
+                BackgroundColor="White"
+                StrokeThickness="0"
+                Padding="20,14,20,28">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20,20,0,0"/>
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="#000000" Offset="0,-2" Radius="12" Opacity="0.08"/>
+            </Border.Shadow>
+
+            <Button Text="Simpan Toko"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="#3E64FF"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="15"
+                    CornerRadius="12"
+                    HeightRequest="50"/>
+        </Border>
+
+    </Grid>
 
 </ContentPage>
