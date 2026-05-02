@@ -74,7 +74,7 @@ namespace Database
                     );
                 }
                 System.Diagnostics.Debug.WriteLine($"LOGIN TRY: '{email}' | '{password}'");
-                var query = @"SELECT id, name, email, password, role 
+                var query = @"SELECT id, name, email, password, role, balance 
                       FROM users 
                       WHERE email = @email AND password = @password 
                       LIMIT 1";
@@ -88,6 +88,10 @@ namespace Database
                 {
                     if (reader.Read())
                     {
+                        var balance = reader["balance"] == DBNull.Value
+                            ? 0m
+                            : Convert.ToDecimal(reader["balance"]);
+
                         if (reader["role"].ToString() == "admin")
                         {
                             return new Admin
@@ -97,7 +101,8 @@ namespace Database
                                 password: reader["password"].ToString()!,
                                 role: reader["role"].ToString()!,
                                 id: reader["id"].ToString()!
-                            );
+                            )
+                            { Balance = balance };
                         }
                         else if (reader["role"].ToString() == "owner")
                         {
@@ -108,7 +113,8 @@ namespace Database
                                 email: reader["email"].ToString()!,
                                 password: reader["password"].ToString()!,
                                 role: reader["role"].ToString()!
-                            );
+                            )
+                            { Balance = balance };
                         }
                         else if (reader["role"].ToString() == "customer")
                         {
@@ -119,7 +125,8 @@ namespace Database
                                 email: reader["email"].ToString()!,
                                 password: reader["password"].ToString()!,
                                 role: reader["role"].ToString()!
-                            );
+                            )
+                            { Balance = balance };
                         }
                     }
                 }
@@ -389,6 +396,204 @@ namespace Database
                         items.Add(item);
                     }
                 }
+            }
+
+            return items;
+        }
+
+        // ── Get Items for Store (public) ─────────────────────────────────────
+        public List<Item> GetItemsForStore(string storeId)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            return GetItemsByStoreId(connection, storeId);
+        }
+
+        // ── Insert Store ──────────────────────────────────────────────────────
+        public void InsertStore(Store store)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "INSERT INTO stores (store_id, owner_id, name, address, phone) VALUES (@sid, @oid, @name, @addr, @phone)",
+                connection);
+            cmd.Parameters.AddWithValue("@sid", store.StoreId);
+            cmd.Parameters.AddWithValue("@oid", store.OwnerId);
+            cmd.Parameters.AddWithValue("@name", store.Name);
+            cmd.Parameters.AddWithValue("@addr", (object?)store.Address ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@phone", (object?)store.Phone ?? DBNull.Value);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Update Store ──────────────────────────────────────────────────────
+        public void UpdateStore(Store store)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "UPDATE stores SET name = @name, address = @addr, phone = @phone WHERE store_id = @sid",
+                connection);
+            cmd.Parameters.AddWithValue("@sid", store.StoreId);
+            cmd.Parameters.AddWithValue("@name", store.Name);
+            cmd.Parameters.AddWithValue("@addr", (object?)store.Address ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@phone", (object?)store.Phone ?? DBNull.Value);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Delete Store (cascade delete items) ───────────────────────────────
+        public void DeleteStore(string storeId)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var delItems = new SqliteCommand("DELETE FROM items WHERE store_id = @sid", connection);
+            delItems.Parameters.AddWithValue("@sid", storeId);
+            delItems.ExecuteNonQuery();
+            var delStore = new SqliteCommand("DELETE FROM stores WHERE store_id = @sid", connection);
+            delStore.Parameters.AddWithValue("@sid", storeId);
+            delStore.ExecuteNonQuery();
+        }
+
+        // ── Insert Item ───────────────────────────────────────────────────────
+        public void InsertItem(Item item)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "INSERT INTO items (id, name, price, stock, category, store_id) VALUES (@id, @name, @price, @stock, @cat, @sid)",
+                connection);
+            cmd.Parameters.AddWithValue("@id", item.Id);
+            cmd.Parameters.AddWithValue("@name", item.Name);
+            cmd.Parameters.AddWithValue("@price", (int)item.Price);
+            cmd.Parameters.AddWithValue("@stock", item.Stock);
+            cmd.Parameters.AddWithValue("@cat", item.Category);
+            cmd.Parameters.AddWithValue("@sid", item.StoreId);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Update Item ───────────────────────────────────────────────────────
+        public void UpdateItem(Item item)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "UPDATE items SET name = @name, price = @price, stock = @stock, category = @cat WHERE id = @id",
+                connection);
+            cmd.Parameters.AddWithValue("@id", item.Id);
+            cmd.Parameters.AddWithValue("@name", item.Name);
+            cmd.Parameters.AddWithValue("@price", (int)item.Price);
+            cmd.Parameters.AddWithValue("@stock", item.Stock);
+            cmd.Parameters.AddWithValue("@cat", item.Category);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Delete Item ───────────────────────────────────────────────────────
+        public void DeleteItem(string itemId)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand("DELETE FROM items WHERE id = @id", connection);
+            cmd.Parameters.AddWithValue("@id", itemId);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Get user balance from DB ───────────────────────────────────────────
+        public decimal GetUserBalance(string userId)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand("SELECT balance FROM users WHERE id = @id", connection);
+            cmd.Parameters.AddWithValue("@id", userId);
+            var result = cmd.ExecuteScalar();
+            return result != null ? Convert.ToDecimal(result) : 0;
+        }
+
+        // ── Insert Order ──────────────────────────────────────────────────────
+        public void InsertOrder(string orderId, string customerId, string storeId, string status, string createdAt)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "INSERT INTO orders (id, customer_id, store_id, status, created_at) VALUES (@id, @cid, @sid, @status, @cat)",
+                connection);
+            cmd.Parameters.AddWithValue("@id", orderId);
+            cmd.Parameters.AddWithValue("@cid", customerId);
+            cmd.Parameters.AddWithValue("@sid", storeId);
+            cmd.Parameters.AddWithValue("@status", status);
+            cmd.Parameters.AddWithValue("@cat", createdAt);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Insert Order Item ─────────────────────────────────────────────────
+        public void InsertOrderItem(string orderId, string itemId, string itemName, int unitPrice, int quantity)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand(
+                "INSERT INTO order_items (order_id, item_id, item_name, unit_price, quantity) VALUES (@oid, @iid, @iname, @price, @qty)",
+                connection);
+            cmd.Parameters.AddWithValue("@oid", orderId);
+            cmd.Parameters.AddWithValue("@iid", itemId);
+            cmd.Parameters.AddWithValue("@iname", itemName);
+            cmd.Parameters.AddWithValue("@price", unitPrice);
+            cmd.Parameters.AddWithValue("@qty", quantity);
+            cmd.ExecuteNonQuery();
+        }
+
+        // ── Get Orders by Customer (with items + store name) ─────────────────
+        public List<AstroBoy.Utils.OrderRecord> GetOrdersByCustomer(string customerId)
+        {
+            var records = new List<AstroBoy.Utils.OrderRecord>();
+
+            using var connection = GetConnection();
+            connection.Open();
+
+            var cmd = new SqliteCommand(
+                @"SELECT o.id, o.store_id, o.status, o.created_at, s.name as store_name
+                  FROM orders o
+                  LEFT JOIN stores s ON o.store_id = s.store_id
+                  WHERE o.customer_id = @cid
+                  ORDER BY o.created_at DESC",
+                connection);
+            cmd.Parameters.AddWithValue("@cid", customerId);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var orderId = reader["id"].ToString()!;
+                var record = new AstroBoy.Utils.OrderRecord
+                {
+                    OrderId = orderId,
+                    StoreName = reader["store_name"]?.ToString() ?? "-",
+                    Status = reader["status"].ToString()!,
+                    OrderDate = DateTime.TryParse(reader["created_at"].ToString(), out var dt) ? dt : DateTime.Now,
+                    Items = GetOrderItemRecords(connection, orderId)
+                };
+                record.Total = record.Items.Sum(i => i.Price * i.Qty);
+                records.Add(record);
+            }
+
+            return records;
+        }
+
+        private List<AstroBoy.Utils.OrderItemRecord> GetOrderItemRecords(SqliteConnection connection, string orderId)
+        {
+            var items = new List<AstroBoy.Utils.OrderItemRecord>();
+
+            var cmd = new SqliteCommand(
+                "SELECT item_id, item_name, unit_price, quantity FROM order_items WHERE order_id = @oid",
+                connection);
+            cmd.Parameters.AddWithValue("@oid", orderId);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                items.Add(new AstroBoy.Utils.OrderItemRecord
+                {
+                    ProductName = reader["item_name"].ToString()!,
+                    ImageSource = reader["item_id"].ToString()!,
+                    Price = Convert.ToDecimal(reader["unit_price"]),
+                    Qty = Convert.ToInt32(reader["quantity"])
+                });
             }
 
             return items;

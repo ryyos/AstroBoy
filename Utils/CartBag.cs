@@ -7,6 +7,8 @@ public class CartBagEntry
 {
     public string ProductName { get; set; } = string.Empty;
     public string StoreName { get; set; } = string.Empty;
+    public string StoreId { get; set; } = string.Empty;
+    public string ItemId { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public string ImageSource { get; set; } = string.Empty;
     public int MaxStock { get; set; }
@@ -32,7 +34,7 @@ public static class CartBag
     /// <summary>
     /// Tambah 1 unit produk. Jika sudah ada entrynya, increment qty (max = maxStock).
     /// </summary>
-    public static void Add(string productName, string storeName,
+    public static void Add(string itemId, string productName, string storeName, string storeId,
                            decimal price, string imageSource, int maxStock)
     {
         var existing = _items.FirstOrDefault(
@@ -43,8 +45,10 @@ public static class CartBag
         else
             _items.Add(new CartBagEntry
             {
+                ItemId = itemId,
                 ProductName = productName,
                 StoreName = storeName,
+                StoreId = storeId,
                 Price = price,
                 ImageSource = imageSource,
                 MaxStock = maxStock,

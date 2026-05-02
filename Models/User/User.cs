@@ -8,7 +8,7 @@ public abstract class User
     public string Name { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
-    public string Role { get; set; }
+    public string Role { get; set; }    
     public decimal Balance { get; set; }
 
     public User(string name, string email, string password, string role, string? id = null)

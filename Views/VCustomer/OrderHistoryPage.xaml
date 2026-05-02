@@ -6,6 +6,10 @@
              Title="Riwayat Pesanan"
              BackgroundColor="#F8F9FF">
 
+    <ContentPage.Resources>
+        <utils:ItemImageConverter x:Key="ItemImageConverter" />
+    </ContentPage.Resources>
+
     <Grid>
 
         <!-- ── Empty State ────────────────────────────────────────────────── -->
@@ -105,7 +109,7 @@
                                                 <Border.StrokeShape>
                                                     <RoundRectangle CornerRadius="8"/>
                                                 </Border.StrokeShape>
-                                                <Image Source="{Binding ImageSource}"
+                                                <Image Source="{Binding ImageSource, Converter={StaticResource ItemImageConverter}}"
                                                        Aspect="AspectFill"/>
                                             </Border>
 
@@ -150,18 +154,18 @@
                                        TextColor="#1F2937"
                                        VerticalOptions="Center"/>
 
-                                <!-- Badge "✅ Selesai" -->
+                                <!-- Badge status (Selesai / Pending) -->
                                 <Border Grid.Column="1"
-                                        BackgroundColor="#DCFCE7"
+                                        BackgroundColor="{Binding StatusBadgeBackground}"
                                         StrokeThickness="0"
                                         Padding="10,4"
                                         VerticalOptions="Center">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="8"/>
                                     </Border.StrokeShape>
-                                    <Label Text="✅ Selesai"
+                                    <Label Text="{Binding StatusText}"
                                            FontSize="12"
-                                           TextColor="#16A34A"/>
+                                           TextColor="{Binding StatusTextColor}"/>
                                 </Border>
                             </Grid>
 

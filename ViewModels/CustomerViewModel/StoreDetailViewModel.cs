@@ -45,6 +45,7 @@ public class StoreDetailViewModel : BaseViewModel
     public ICommand AddToCartCommand { get; }
     public ICommand RemoveFromCartCommand { get; }
     public ICommand GoToCartCommand { get; }
+    public ICommand OpenProductDetailCommand { get; }
 
     public StoreDetailViewModel(StoreDisplay store)
     {
@@ -54,6 +55,11 @@ public class StoreDetailViewModel : BaseViewModel
         RemoveFromCartCommand = new Command<ProductDisplay>(RemoveFromCart);
         GoToCartCommand = new Command(async () =>
             await Shell.Current.GoToAsync(nameof(CartPage)));
+        OpenProductDetailCommand = new Command<ProductDisplay>(async product =>
+        {
+            if (product is null) return;
+            await Shell.Current.Navigation.PushAsync(new ProductDetailPage(product));
+        });
 
         // Sinkronkan qty awal dari CartBag
         RefreshFromBag();
@@ -66,8 +72,8 @@ public class StoreDetailViewModel : BaseViewModel
         if (product.Quantity >= product.Stock) return;
 
         product.Quantity++;
-        CartBag.Add(product.ProductName, product.StoreName, product.Price,
-                    product.ImageSource, product.Stock);
+        CartBag.Add(product.ItemId, product.ProductName, product.StoreName, product.StoreId,
+                    product.Price, product.ImageSource, product.Stock);
         CartCount = CartBag.TotalCount;
     }
 

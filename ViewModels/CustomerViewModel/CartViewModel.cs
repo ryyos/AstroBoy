@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using AstroBoy.Utils;
 using AstroBoy.ViewModels.Base;
+using Database;
 
 namespace AstroBoy.ViewModels.CustomerViewModel;
 
@@ -120,9 +121,10 @@ public class CartViewModel : BaseViewModel
     {
         if (item is null || item.Qty >= item.MaxStock) return;
 
+        var entry = CartBag.Items.FirstOrDefault(e => e.ProductName == item.ProductName && e.StoreName == item.StoreName);
         item.Qty++;
-        CartBag.Add(item.ProductName, item.StoreName, item.Price,
-                    item.ImageSource, item.MaxStock);
+        CartBag.Add(entry?.ItemId ?? string.Empty, item.ProductName, item.StoreName,
+                    entry?.StoreId ?? string.Empty, item.Price, item.ImageSource, item.MaxStock);
         RecalcTotal();
     }
 
@@ -160,22 +162,30 @@ public class CartViewModel : BaseViewModel
 
         if (!confirmed) return;
 
-        // Buat record order dari isi cart saat ini, sebelum cart dikosongkan
-        var record = new OrderRecord
-        {
-            Items = CartBag.Items.Select(i => new OrderItemRecord
-            {
-                ProductName = i.ProductName,
-                StoreName = i.StoreName,
-                ImageSource = i.ImageSource,
-                Price = i.Price,
-                Qty = i.Qty
-            }).ToList(),
-            Total = CartBag.Items.Sum(i => i.Price * i.Qty)
-        };
+        var db = new DatabaseContext();
+        var customerId = SessionUser.Current?.Id ?? string.Empty;
+        var now = DateTime.Now.ToString("o");
 
-        // Simpan ke riwayat order
-        OrderHistory.Add(record);
+        // Kelompokkan item per toko → satu order per toko
+        var grouped = CartBag.Items.GroupBy(i => i.StoreId);
+
+        foreach (var group in grouped)
+        {
+            var orderId = Guid.NewGuid().ToString();
+            var storeId = group.Key;
+
+            db.InsertOrder(orderId, customerId, storeId, "Pending", now);
+
+            foreach (var entry in group)
+            {
+                db.InsertOrderItem(
+                    orderId,
+                    entry.ItemId,
+                    entry.ProductName,
+                    (int)entry.Price,
+                    entry.Qty);
+            }
+        }
 
         CartBag.Clear();
         CartItems.Clear();

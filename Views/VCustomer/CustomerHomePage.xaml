@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:utils="clr-namespace:AstroBoy.Utils"
              x:Class="AstroBoy.Views.VCustomer.CustomerHomePage"
              x:Name="pageRoot"
              BackgroundColor="#F8F9FF">
+
+    <ContentPage.Resources>
+        <utils:ItemImageConverter x:Key="ItemImageConverter" />
+    </ContentPage.Resources>
 
     <!-- ═══════════════════════════════════════════════════════════
          KONTEN UTAMA: Toast → Search → Filter Chip → Product Grid
@@ -66,7 +71,7 @@
                     HorizontalScrollBarVisibility="Never">
             <HorizontalStackLayout Spacing="8"
                                    Padding="0,2"
-                                   BindableLayout.ItemsSource="{Binding StoreFilters}">
+                                   BindableLayout.ItemsSource="{Binding CategoryFilters}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate>
                         <!-- Setiap chip warnanya reaktif terhadap IsSelected -->
@@ -76,10 +81,10 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20"/>
                             </Border.StrokeShape>
-                            <!-- Tap chip → kirim nama toko ke SelectStoreFilterCommand -->
+                            <!-- Tap chip → kirim nama kategori ke SelectCategoryFilterCommand -->
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
-                                    Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.SelectStoreFilterCommand}"
+                                    Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.SelectCategoryFilterCommand}"
                                     CommandParameter="{Binding Name}"/>
                             </Border.GestureRecognizers>
                             <Label Text="{Binding Name}"
@@ -120,14 +125,19 @@
 
                         <Grid RowDefinitions="130,Auto,Auto,Auto,Auto">
 
-                            <!-- Gambar produk: full width, sudut atas rounded -->
+                            <!-- Gambar produk: full width, sudut atas rounded, tap → detail -->
                             <Border Grid.Row="0"
                                     StrokeThickness="0"
                                     HeightRequest="130">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12,12,0,0"/>
                                 </Border.StrokeShape>
-                                <Image Source="{Binding ImageSource}"
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={x:Reference pageRoot}, Path=BindingContext.OpenProductDetailCommand}"
+                                        CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                                <Image Source="{Binding ImageSource, Converter={StaticResource ItemImageConverter}}"
                                        Aspect="AspectFill"/>
                             </Border>
 

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using AstroBoy.Services;
 using AstroBoy.Utils;
 using AstroBoy.ViewModels.Base;
 using AstroBoy.Views.VCustomer;
@@ -63,8 +64,11 @@ public class ProductDisplay : BaseViewModel
 {
     private int _quantity;
 
+    public string ItemId { get; init; } = string.Empty;
     public string ProductName { get; init; } = string.Empty;
     public string StoreName { get; init; } = string.Empty;
+    public string StoreId { get; init; } = string.Empty;
+    public string Category { get; init; } = string.Empty;
     public decimal Price { get; init; }
     public string ImageSource { get; init; } = string.Empty;
     public int Stock { get; init; }
@@ -99,7 +103,7 @@ public class StoreViewModel : BaseViewModel
 
     // ── Collections yang di-bind ke UI ───────────────────────────────────────
     public ObservableCollection<ProductDisplay> FilteredProducts { get; } = new();
-    public ObservableCollection<StoreFilterItem> StoreFilters { get; } = new();
+    public ObservableCollection<StoreFilterItem> CategoryFilters { get; } = new();
 
     // ── Search ────────────────────────────────────────────────────────────────
     private string _searchQuery = string.Empty;
@@ -115,17 +119,17 @@ public class StoreViewModel : BaseViewModel
         }
     }
 
-    // ── Filter toko yang dipilih ──────────────────────────────────────────────
-    private string _selectedStore = "Semua";
+    // ── Filter kategori yang dipilih ─────────────────────────────────────────
+    private string _selectedCategory = "Semua";
 
-    public string SelectedStore
+    public string SelectedCategory
     {
-        get => _selectedStore;
+        get => _selectedCategory;
         set
         {
-            _selectedStore = value;
+            _selectedCategory = value;
             OnPropertyChanged();
-            UpdateChipSelection(); // update warna chip
+            UpdateChipSelection();
             ApplyFilter();
         }
     }
@@ -184,23 +188,29 @@ public class StoreViewModel : BaseViewModel
     public ICommand AddToCartCommand { get; }
     public ICommand RemoveFromCartCommand { get; }
     public ICommand GoToCartCommand { get; }
-    public ICommand SelectStoreFilterCommand { get; }
+    public ICommand SelectCategoryFilterCommand { get; }
     public ICommand OpenStoreCommand { get; } // StorePage → StoreDetailPage
+    public ICommand OpenProductDetailCommand { get; } // Product card → ProductDetailPage
 
     public StoreViewModel()
     {
         // Inisialisasi commands
         AddToCartCommand = new Command<ProductDisplay>(AddToCart);
         RemoveFromCartCommand = new Command<ProductDisplay>(RemoveFromCart);
-        SelectStoreFilterCommand = new Command<string>(SelectStoreFilter);
+        SelectCategoryFilterCommand = new Command<string>(SelectCategoryFilter);
         GoToCartCommand = new Command(async () =>
             await Shell.Current.GoToAsync(nameof(CartPage)));
         OpenStoreCommand = new Command<StoreDisplay>(async store =>
             await OpenStore(store));
+        OpenProductDetailCommand = new Command<ProductDisplay>(async product =>
+        {
+            if (product is null) return;
+            await Shell.Current.Navigation.PushAsync(new ProductDetailPage(product));
+        });
 
         // Setup awal
         LoadDummyData();
-        BuildStoreFilters();
+        BuildCategoryFilters();
         BuildStores();
         ApplyFilter();
         ApplyStoreFilter();
@@ -208,47 +218,30 @@ public class StoreViewModel : BaseViewModel
 
     // ── Dummy data ────────────────────────────────────────────────────────────
     /// <summary>
-    /// Data produk in-memory. Akan diganti koneksi service/DB di iterasi berikutnya.
+    /// Load produk dari database via StoreService.
     /// </summary>
     private void LoadDummyData()
     {
-        _allProducts.AddRange(new[]
+        var storeService = new StoreService();
+        var stores = storeService.GetAllStores();
+
+        foreach (var store in stores)
         {
-            // Toko Elektronik
-            new ProductDisplay
+            foreach (var item in store.Items)
             {
-                ProductName = "Laptop ASUS",
-                StoreName   = "Toko Elektronik",
-                Price       = 8_000_000,
-                ImageSource = "asus_leptop.png",
-                Stock       = 10
-            },
-            new ProductDisplay
-            {
-                ProductName = "Mouse Wireless",
-                StoreName   = "Toko Elektronik",
-                Price       = 150_000,
-                ImageSource = "mouse_warlees.png",
-                Stock       = 50
-            },
-            // Toko Fashion
-            new ProductDisplay
-            {
-                ProductName = "Jeans Pria",
-                StoreName   = "Toko Fashion",
-                Price       = 250_000,
-                ImageSource = "jeans.png",
-                Stock       = 30
-            },
-            new ProductDisplay
-            {
-                ProductName = "Kaos Polos",
-                StoreName   = "Toko Fashion",
-                Price       = 85_000,
-                ImageSource = "kaos_polos.png",
-                Stock       = 100
-            },
-        });
+                _allProducts.Add(new ProductDisplay
+                {
+                    ItemId = item.Id,
+                    ProductName = item.Name,
+                    StoreName = store.Name,
+                    StoreId = store.StoreId,
+                    Category = item.Category,
+                    Price = (decimal)item.Price,
+                    ImageSource = item.Id,
+                    Stock = item.Stock
+                });
+            }
+        }
     }
 
     // ── Build StoreDisplay list (untuk StorePage) ─────────────────────────────
@@ -304,18 +297,22 @@ public class StoreViewModel : BaseViewModel
             new Dictionary<string, object> { { "SelectedStore", store } });
     }
 
-    // ── Build chip filter ─────────────────────────────────────────────────────
+    // ── Build chip filter kategori ────────────────────────────────────────────
     /// <summary>
-    /// Membangun list chip filter: "Semua" + nama unik setiap toko dari data produk.
+    /// Membangun list chip filter: "Semua" + kategori unik dari semua produk.
     /// </summary>
-    private void BuildStoreFilters()
+    private void BuildCategoryFilters()
     {
-        // Chip "Semua" selalu ada di posisi pertama dan aktif by default
-        StoreFilters.Add(new StoreFilterItem { Name = "Semua", IsSelected = true });
+        CategoryFilters.Add(new StoreFilterItem { Name = "Semua", IsSelected = true });
 
-        var storeNames = _allProducts.Select(p => p.StoreName).Distinct();
-        foreach (var name in storeNames)
-            StoreFilters.Add(new StoreFilterItem { Name = name, IsSelected = false });
+        var categories = _allProducts
+            .Select(p => p.Category)
+            .Where(c => !string.IsNullOrWhiteSpace(c))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(c => c);
+
+        foreach (var cat in categories)
+            CategoryFilters.Add(new StoreFilterItem { Name = cat, IsSelected = false });
     }
 
     // ── Filter logic ──────────────────────────────────────────────────────────
@@ -326,9 +323,10 @@ public class StoreViewModel : BaseViewModel
     {
         var result = _allProducts.AsEnumerable();
 
-        // Filter berdasarkan toko yang dipilih
-        if (_selectedStore != "Semua")
-            result = result.Where(p => p.StoreName == _selectedStore);
+        // Filter berdasarkan kategori yang dipilih
+        if (_selectedCategory != "Semua")
+            result = result.Where(p =>
+                p.Category.Equals(_selectedCategory, StringComparison.OrdinalIgnoreCase));
 
         // Filter berdasarkan kata kunci (contains, ignore case)
         if (!string.IsNullOrWhiteSpace(_searchQuery))
@@ -343,14 +341,14 @@ public class StoreViewModel : BaseViewModel
     // ── Update warna chip ─────────────────────────────────────────────────────
     private void UpdateChipSelection()
     {
-        foreach (var chip in StoreFilters)
-            chip.IsSelected = chip.Name == _selectedStore;
+        foreach (var chip in CategoryFilters)
+            chip.IsSelected = chip.Name == _selectedCategory;
     }
 
-    // ── Select toko dari chip ─────────────────────────────────────────────────
-    private void SelectStoreFilter(string storeName)
+    // ── Select kategori dari chip ─────────────────────────────────────────────
+    private void SelectCategoryFilter(string categoryName)
     {
-        SelectedStore = storeName;
+        SelectedCategory = categoryName;
     }
 
     // ── Cart: tambah produk ───────────────────────────────────────────────────
@@ -360,8 +358,8 @@ public class StoreViewModel : BaseViewModel
         if (product.Quantity >= product.Stock) return; // batas stok
 
         product.Quantity++;
-        CartBag.Add(product.ProductName, product.StoreName, product.Price,
-                    product.ImageSource, product.Stock);
+        CartBag.Add(product.ItemId, product.ProductName, product.StoreName, product.StoreId,
+                    product.Price, product.ImageSource, product.Stock);
         CartCount = CartBag.TotalCount;
 
         // Tampilkan toast "Ditambahkan ke keranjang" selama 2 detik
