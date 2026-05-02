@@ -254,3 +254,7 @@ FileStorageStrategy : IStorageStrategy
    ├─ Save → serialize object ke file
    ├─ Load → deserialize dari file
    └─ Delete → hapus file
+
+
+
+   

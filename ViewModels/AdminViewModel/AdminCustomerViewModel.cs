@@ -8,7 +8,7 @@ using AstroBoy.Services;
 
 namespace AstroBoy.ViewModels.AdminViewModel
 {
-    internal class AdminCustomerViewModel
+    public class AdminCustomerViewModel
     {
         public ICommand DeleteCustomerCommand { get; }
         public ICommand EditCustomerCommand { get; }
@@ -21,38 +21,40 @@ namespace AstroBoy.ViewModels.AdminViewModel
             _customerService = new CustomerService();
             Customers = new ObservableCollection<Customer>();
 
+            EditCustomerCommand = new Command<Customer>(OnEditCustomer);
             DeleteCustomerCommand = new Command<Customer>(OnDeleteCustomer);
-            EditCustomerCommand = new Command<User>(OnEditCustomer);
 
             LoadCustomers();
         }
 
-        private void LoadCustomers()
+        public void LoadCustomers()
         {
             var customers = _customerService.GetAllCustomers();
 
             Customers.Clear();
+
             foreach (var customer in customers)
             {
                 Customers.Add(customer);
             }
         }
 
-
-        private async void OnDeleteCustomer(User user)
+        private async void OnDeleteCustomer(Customer customer)
         {
             bool confirm = await Application.Current.MainPage.DisplayAlert("Confirm", "Delete this customer?", "Yes", "No");
 
             if (!confirm) return;
 
-            _customerService.Delete(user.Id);
+            _customerService.Delete(customer.Id);
             LoadCustomers();
         }
 
-        private async void OnEditCustomer(User user)
+        private async void OnEditCustomer(Customer customer)
         {
-            await Shell.Current.GoToAsync($"EditCustomerPage?Id={user.Id}");
+            await Shell.Current.GoToAsync($"EditCustomerPage?Id={customer.Id}");
         }
+
+
 
     }
 }

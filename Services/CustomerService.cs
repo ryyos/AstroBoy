@@ -9,27 +9,26 @@ namespace AstroBoy.Services
 {
     internal class CustomerService
     {
-        private List<Customer> customers;
         private DatabaseContext db;
 
         public CustomerService()
         {
             db = new DatabaseContext();
-            customers = db.GetAllCustomers();
         }
 
         public int GetTotalCustomers()
         {
-            return customers.Count;
+            return db.GetAllCustomers().Count;
         }
 
         public void AddCustomer(Customer customer)
         {
+            db.InsertUser(customer);
         }
 
         public List<Customer> GetAllCustomers()
         {
-            return customers;
+            return db.GetAllCustomers();
         }
 
         public void Delete(string id)
@@ -50,7 +49,6 @@ namespace AstroBoy.Services
         {
 
         }
-
     }
 
 }

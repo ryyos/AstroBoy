@@ -30,11 +30,10 @@ namespace AstroBoy.ViewModels.AdminViewModel
                 name: Name,
                 email: Email,
                 password: Password,
-                role: "Customer"
+                role: "customer"
             );
 
             _customerService.AddCustomer(newCustomer);
-
             await Application.Current.MainPage.Navigation.PopAsync();
         }
     }

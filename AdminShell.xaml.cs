@@ -12,6 +12,7 @@ namespace AstroBoy
             Routing.RegisterRoute(nameof(AdminOwnerStoresPage), typeof(AdminOwnerStoresPage));
             Routing.RegisterRoute(nameof(AdminStoreItemsPage), typeof(AdminStoreItemsPage));
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
+            
         }
     }
 }

@@ -38,6 +38,7 @@ namespace Database
 
         private SqliteConnection GetConnection()
         {
+            Console.WriteLine($"DB Path: {dbPath}");
             return new SqliteConnection($"Data Source={dbPath}");
         }
         public void InsertUser(User user)
@@ -46,15 +47,24 @@ namespace Database
             {
                 connection.Open();
 
-                var query = "INSERT INTO users (name, email, password, role) VALUES (@name, @email, @password, @role)";
+                var query = "INSERT INTO users (id, name, email, password, role, balance) VALUES (@id, @name, @email, @password, @role, @balance)";
                 var command = new SqliteCommand(query, connection);
 
+
+                Console.WriteLine(user.Id);
+                Console.WriteLine(user.Name);
+                Console.WriteLine(user.Email);
+                Console.WriteLine(user.Password);
+                Console.WriteLine(user.Role);
+
+                command.Parameters.AddWithValue("@id", user.Id);
                 command.Parameters.AddWithValue("@name", user.Name);
                 command.Parameters.AddWithValue("@email", user.Email);
                 command.Parameters.AddWithValue("@password", user.Password);
-                command.Parameters.AddWithValue("@role", "customer");
-
-                command.ExecuteNonQuery();
+                command.Parameters.AddWithValue("@role", user.Role);
+                command.Parameters.AddWithValue("@balance", 0);
+                var rows = command.ExecuteNonQuery();
+                Console.WriteLine($"Rows affected: {rows}");
             }
         }
 
@@ -165,7 +175,19 @@ namespace Database
             {
                 connection.Open();
 
-                var query = "SELECT * FROM users WHERE role = 'customer'";
+                var countCmd = new SqliteCommand("SELECT COUNT(*) FROM users", connection);
+                var total = countCmd.ExecuteScalar();
+                Console.WriteLine($"TOTAL USERS: {total}");
+
+                var debugCmd = new SqliteCommand("SELECT id, name, role FROM users", connection);
+                var debugReader = debugCmd.ExecuteReader();
+
+                while (debugReader.Read())
+                {
+                    Console.WriteLine($"DB DATA -> {debugReader["name"]} | {debugReader["role"]}");
+                }
+
+                var query = "SELECT * FROM users WHERE LOWER(TRIM(role)) = 'customer'";
                 var command = new SqliteCommand(query, connection);
                 var reader = command.ExecuteReader();
 
@@ -173,10 +195,12 @@ namespace Database
                 {
                     users.Add(
                         new Customer(
-                            name: reader["name"].ToString()!,
-                            email: reader["email"].ToString()!,
-                            password: reader["password"].ToString()!
-                        )
+                                id: reader["id"].ToString()!,
+                                name: reader["name"].ToString()!,
+                                email: reader["email"].ToString()!,
+                                password: reader["password"].ToString()!,
+                                role: reader["role"].ToString()!
+                            )
                     );
                 }
             }

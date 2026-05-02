@@ -5,15 +5,23 @@
     xmlns:vm="clr-namespace:AstroBoy.ViewModels.AdminViewModel"
     Title="Manage Customer">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <Grid Padding="20" RowDefinitions="Auto,Auto,*" RowSpacing="15">
 
+        <!-- Header -->
         <Label Text="Customer Management"
                FontSize="24"
-               FontAttributes="Bold"/>
+               FontAttributes="Bold"
+               Grid.Row="0"/>
 
-        <Button Text="Add Customer" Clicked="OnAddCustomerClicked"/>
+        <!-- Button -->
+        <Button Text="Add Customer"
+                Clicked="OnAddCustomerClicked"
+                Grid.Row="1"/>
 
-        <CollectionView ItemsSource="{Binding Customers}">
+        <!-- List -->
+        <CollectionView ItemsSource="{Binding Customers}"
+                        Grid.Row="2">
+
             <CollectionView.ItemTemplate>
                 <DataTemplate>
 
@@ -25,15 +33,15 @@
                                        TextColor="Black"
                                        FontAttributes="Bold"/>
                                 
-                                <Label Text="{Binding Role}" 
+                                <Label Text="{Binding Email}" 
                                        TextColor="Black"/>
                             </VerticalStackLayout>
 
                             <HorizontalStackLayout Grid.Column="1" Spacing="10">
                                 <Button Text="Edit"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCustomerViewModel}}, Path=EditCustomerCommand}"
-                                        CommandParameter="{Binding .}"
-                                        />
+                                        CommandParameter="{Binding .}" />
+                                
                                 <Button Text="Delete"
                                         BackgroundColor="Red"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCustomerViewModel}}, Path=DeleteCustomerCommand}"
@@ -46,7 +54,8 @@
 
                 </DataTemplate>
             </CollectionView.ItemTemplate>
+
         </CollectionView>
 
-    </VerticalStackLayout>
+    </Grid>
 </ContentPage>
