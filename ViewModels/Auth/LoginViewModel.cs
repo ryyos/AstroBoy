@@ -31,7 +31,16 @@ public class LoginViewModel : BaseViewModel
 
     private async void OnGoToRegister()
     {
-        await Application.Current.MainPage.Navigation.PushAsync(new RegisterPage());
+        var nav = Application.Current.MainPage?.Navigation;
+
+        if (nav != null)
+        {
+            await nav.PushAsync(new RegisterPage());
+        }
+        else
+        {
+            await Application.Current.MainPage.DisplayAlert("Error", "Navigation not available", "OK");
+        }
     }
 
     private async void LoginClick()

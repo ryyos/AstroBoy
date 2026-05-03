@@ -7,6 +7,6 @@ public partial class AdminOwnerList : ContentPage
 	public AdminOwnerList()
 	{
 		InitializeComponent();
-        BindingContext = new AdminOwnerListViewModel();
-    }
+		BindingContext = new AdminOwnerListViewModel();
+	}
 }

@@ -6,7 +6,7 @@ using AstroBoy.Models;
 
 namespace AstroBoy.Services
 {
-    internal class OwnerService
+    public class OwnerService
     {
 
         private List<Owner> owners;

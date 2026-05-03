@@ -11,8 +11,10 @@ using AstroBoy.Views.VAdmin;
 public class AdminOwnerStoresViewModel
 {
     private readonly StoreService _service;
+    private readonly ItemService _itemService;
 
     private string ownerId;
+    public int ItemCount { get; set; }
     public string OwnerId
     {
         get => ownerId;
@@ -35,6 +37,7 @@ public class AdminOwnerStoresViewModel
     {
         Console.WriteLine($"OwnerId: {OwnerId}");
         _service = new StoreService();
+        _itemService = new ItemService();
         Stores = new ObservableCollection<Store>();
     }
 
@@ -44,6 +47,10 @@ public class AdminOwnerStoresViewModel
 
         Stores.Clear();
         foreach (var item in data)
+        {
+            item.ItemCount = _itemService.GetItemsByStore(item.StoreId!).Count;
             Stores.Add(item);
+        }
+
     }
 }

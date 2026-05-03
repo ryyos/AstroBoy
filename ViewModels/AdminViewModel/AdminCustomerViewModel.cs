@@ -12,10 +12,23 @@ namespace AstroBoy.ViewModels.AdminViewModel
     {
         public ICommand DeleteCustomerCommand { get; }
         public ICommand EditCustomerCommand { get; }
+        private List<Customer> _allCustomers;
 
         private readonly CustomerService _customerService;
         public ObservableCollection<Customer> Customers { get; set; }
 
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_searchText == value) return;
+                _searchText = value;
+
+                FilterCustomers();
+            }
+        }
         public AdminCustomerViewModel()
         {
             _customerService = new CustomerService();
@@ -29,11 +42,25 @@ namespace AstroBoy.ViewModels.AdminViewModel
 
         public void LoadCustomers()
         {
-            var customers = _customerService.GetAllCustomers();
+            _allCustomers = _customerService.GetAllCustomers();
+
+            FilterCustomers();
+        }
+
+        private void FilterCustomers()
+        {
+            var filtered = _allCustomers;
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                filtered = _allCustomers
+                    .Where(c => c.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
 
             Customers.Clear();
 
-            foreach (var customer in customers)
+            foreach (var customer in filtered)
             {
                 Customers.Add(customer);
             }

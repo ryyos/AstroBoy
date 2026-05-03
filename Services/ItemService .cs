@@ -6,24 +6,27 @@ using AstroBoy.Models;
 
 namespace AstroBoy.Services
 {
-    internal class ItemService
+    public class ItemService
     {
-        private List<Item> items;
         private DatabaseContext db;
 
         public ItemService()
         {
             db = new DatabaseContext();
-            items = db.GetAllItems();
         }
         public int GetTotalItems()
         {
-            return items.Count;
+            return db.GetAllItems().Count;
         }
 
         public List<Item> GetAllItems()
         {
-            return items;
+            return db.GetAllItems();
+        }
+
+        public List<Item> GetItemsByStore(string id)
+        {
+            return db.GetItemsByStore(id);
         }
     }
 }

@@ -12,7 +12,7 @@ public class RegisterViewModel : BaseViewModel
 
 
     private readonly AuthService _authService;
-    public List<string> Roles { get; } = new() { "Customer", "Owner" };
+    public List<string> Roles { get; } = new() { "customer", "owner" };
     private string _role;
 
     public string Role

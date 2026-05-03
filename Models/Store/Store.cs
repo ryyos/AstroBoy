@@ -7,6 +7,7 @@ public class Store
     public string? Name { get; set; }
     public string? Address { get; set; }
     public string? Phone { get; set; }
+    public int? ItemCount { get; set; }
     public List<Item>? Items { get; set; } = new();
     public List<Order>? Orders { get; set; } = new();
 }

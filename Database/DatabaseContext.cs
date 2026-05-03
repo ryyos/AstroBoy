@@ -474,6 +474,40 @@ namespace Database
             return items;
         }
 
+        public List<Item> GetItemsByStore(string id)
+        {
+            var items = new List<Item>();
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                var itemQuery = "SELECT * FROM items where store_id = @id";
+                var storeCmd = new SqliteCommand(itemQuery, connection);
+                storeCmd.Parameters.AddWithValue("@id", id);
+
+                using (var reader = storeCmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var item = new Item
+                        {
+                            Id = reader["id"].ToString()!,
+                            Name = reader["name"].ToString()!,
+                            Price = int.Parse(reader["price"].ToString()!),
+                            Stock = int.Parse(reader["stock"].ToString()!),
+                            Category = reader["category"].ToString()!,
+                            StoreId = reader["store_id"].ToString()!,
+                        };
+
+                        items.Add(item);
+                    }
+                }
+            }
+
+            return items;
+        }
+
         // ── Update user balance in DB ─────────────────────────────────────────
         public void UpdateUserBalance(string userId, decimal newBalance)
         {

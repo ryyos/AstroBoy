@@ -2,60 +2,134 @@
     x:Class="AstroBoy.Views.VAdmin.AdminDashboardPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Admin Dashboard">
+    BackgroundColor="#F5F7FB">
 
-    <VerticalStackLayout Padding="20" Spacing="20">
+    <ScrollView>
+        <VerticalStackLayout Spacing="20">
 
-        <Label Text="Dashboard"
-               FontSize="24"
-               FontAttributes="Bold"/>
+            <!-- HERO HEADER -->
+            <Grid HeightRequest="160">
+                <Frame
+                    CornerRadius="0"
+                    Padding="20"
+                    BackgroundColor="#3D63FF"
+                    HasShadow="False">
 
-        <Grid ColumnDefinitions="*,*"
-              RowDefinitions="Auto,Auto"
-              RowSpacing="15"
-              ColumnSpacing="15">
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="Dashboard"
+                               FontSize="26"
+                               FontAttributes="Bold"
+                               TextColor="White"/>
 
-            <Frame Grid.Row="0" Grid.Column="0" Padding="15">
-                <VerticalStackLayout>
-                    <Label Text="Customers" TextColor="Black" FontAttributes="Bold"/>
-                    <Label Text="{Binding TotalCustomers}"
-                           FontSize="20"
-                           TextColor="Black"
-                           FontAttributes="Bold"/>
-                </VerticalStackLayout>
-            </Frame>
+                        <Label Text="Overview of your system"
+                               FontSize="14"
+                               TextColor="#E0E7FF"/>
 
-            <Frame Grid.Row="0" Grid.Column="1" Padding="15">
-                <VerticalStackLayout>
-                    <Label Text="Stores" TextColor="Black" FontAttributes="Bold"/>
-                    <Label Text="{Binding TotalStores}"
-                           FontSize="20"
-                           TextColor="Black"
-                           FontAttributes="Bold"/>
-                </VerticalStackLayout>
-            </Frame>
+                        <Label Text="{Binding TodaySummary}"
+                               FontSize="12"
+                               TextColor="#C7D2FE"/>
+                    </VerticalStackLayout>
 
-            <Frame Grid.Row="1" Grid.Column="0" Padding="15">
-                <VerticalStackLayout>
-                    <Label Text="Owners" TextColor="Black" FontAttributes="Bold"/>
-                    <Label Text="{Binding TotalOwners}"
-                           FontSize="20"
-                           TextColor="Black"
-                           FontAttributes="Bold"/>
-                </VerticalStackLayout>
-            </Frame>
+                </Frame>
+            </Grid>
 
-            <Frame Grid.Row="1" Grid.Column="1" Padding="15">
-                <VerticalStackLayout>
-                    <Label Text="Items" TextColor="Black" FontAttributes="Bold"/>
-                    <Label Text="{Binding TotalItems}"
-                           FontSize="20"
-                           TextColor="Black"
-                           FontAttributes="Bold"/>
-                </VerticalStackLayout>
-            </Frame>
 
-        </Grid>
+            <!-- MAIN STATS -->
+            <Grid Padding="20"
+                  ColumnDefinitions="*,*"
+                  RowDefinitions="Auto,Auto"
+                  ColumnSpacing="14"
+                  RowSpacing="14">
 
-    </VerticalStackLayout>
+                <!-- Customers -->
+                <Frame CornerRadius="18" Padding="16" HasShadow="True">
+                    <VerticalStackLayout>
+                        <Label Text="Customers" FontSize="13" TextColor="#6B7280"/>
+                        <Label Text="{Binding TotalCustomers}"
+                               FontSize="24"
+                               FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Owners -->
+                <Frame CornerRadius="18" Padding="16" HasShadow="True" Grid.Column="1">
+                    <VerticalStackLayout>
+                        <Label Text="Owners" FontSize="13" TextColor="#6B7280"/>
+                        <Label Text="{Binding TotalOwners}"
+                               FontSize="24"
+                               FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Stores -->
+                <Frame CornerRadius="18" Padding="16" HasShadow="True" Grid.Row="1">
+                    <VerticalStackLayout>
+                        <Label Text="Stores" FontSize="13" TextColor="#6B7280"/>
+                        <Label Text="{Binding TotalStores}"
+                               FontSize="24"
+                               FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Items -->
+                <Frame CornerRadius="18"
+                       Padding="16"
+                       BackgroundColor="#3D63FF"
+                       HasShadow="False"
+                       Grid.Row="1"
+                       Grid.Column="1">
+                    <VerticalStackLayout>
+                        <Label Text="Items"
+                               FontSize="13"
+                               TextColor="#E0E7FF"/>
+                        <Label Text="{Binding TotalItems}"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               TextColor="White"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </Grid>
+
+
+            <!-- INSIGHT SECTION -->
+            <VerticalStackLayout Padding="20" Spacing="12">
+
+                <Label Text="Insights"
+                       FontSize="18"
+                       FontAttributes="Bold"/>
+
+                <Frame CornerRadius="16" Padding="16" HasShadow="True">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Top Store"
+                               FontSize="13"
+                               TextColor="#6B7280"/>
+                        <Label Text="{Binding TopStoreName}"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+                        <Label Text="{Binding TopStoreStats}"
+                               FontSize="12"
+                               TextColor="#6B7280"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <Frame CornerRadius="16" Padding="16" HasShadow="True">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Most Active Owner"
+                               FontSize="13"
+                               TextColor="#6B7280"/>
+                        <Label Text="{Binding TopOwnerName}"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+                        <Label Text="{Binding TopOwnerStats}"
+                               FontSize="12"
+                               TextColor="#6B7280"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

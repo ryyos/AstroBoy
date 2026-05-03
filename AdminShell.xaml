@@ -1,41 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <Shell
     x:Class="AstroBoy.AdminShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:views="clr-namespace:AstroBoy.Views.VAdmin">
+    xmlns:views="clr-namespace:AstroBoy.Views.VAdmin"
+    FlyoutBackgroundColor="White"
+    FlyoutWidth="280"
+    Shell.FlyoutBehavior="Flyout">
 
+    <!-- ================= HEADER ================= -->
     <Shell.FlyoutHeader>
-        <Grid Padding="20" RowDefinitions="Auto,Auto" BackgroundColor="#f5f5f5">
-            
-            <Border
-                WidthRequest="60"
-                HeightRequest="60"
-                BackgroundColor="Black"
-                HorizontalOptions="Center"
-                StrokeShape="RoundRectangle 30">
+        <Grid HeightRequest="170">
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#3D63FF" Offset="0.0"/>
+                    <GradientStop Color="#5B7CFF" Offset="1.0"/>
+                </LinearGradientBrush>
+            </Grid.Background>
 
-                <Label 
-                    Text="A"
-                    TextColor="White"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center"/>
+            <VerticalStackLayout Padding="20" Spacing="10" VerticalOptions="End">
 
-            </Border>
+                <!-- Avatar -->
+                <Frame WidthRequest="52"
+                       HeightRequest="52"
+                       CornerRadius="26"
+                       BackgroundColor="White"
+                       Padding="0"
+                       HasShadow="False">
+                    <Label Text="A"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           FontAttributes="Bold"
+                           TextColor="#3D63FF"/>
+                </Frame>
 
+                <!-- Name -->
+                <Label Text="Admin"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="White"/>
+
+                <!-- Role -->
+                <Label Text="System Administrator"
+                       FontSize="12"
+                       TextColor="#E0E7FF"/>
+
+            </VerticalStackLayout>
         </Grid>
     </Shell.FlyoutHeader>
 
+
+    <!-- ================= MENU ================= -->
+
+    <!-- MAIN -->
     <FlyoutItem Title="Main">
-        <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
+        <ShellContent
+            Title="Dashboard"
+            Icon="home.png"
+            ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
     </FlyoutItem>
 
+    <!-- MANAGEMENT -->
     <FlyoutItem Title="Management">
-        <ShellContent Title="Customers" ContentTemplate="{DataTemplate views:AdminCustomerPage}" />
-        <ShellContent Title="Owners" ContentTemplate="{DataTemplate views:AdminOwnerList}" />
+        <ShellContent
+            Title="Customers"
+            Icon="users.png"
+            ContentTemplate="{DataTemplate views:AdminCustomerPage}" />
+
+        <ShellContent
+            Title="Owners"
+            Icon="store.png"
+            ContentTemplate="{DataTemplate views:AdminOwnerList}" />
     </FlyoutItem>
 
+
+    <!-- ================= DIVIDER ================= -->
+    <MenuItem Text=" " IsEnabled="False"/>
+    
+
+    <!-- ================= LOGOUT ================= -->
     <MenuItem 
         Text="Logout"
+        IconImageSource="logout.png"
         Clicked="OnLogoutClicked" />
 
 </Shell>

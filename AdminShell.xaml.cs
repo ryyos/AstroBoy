@@ -12,7 +12,6 @@ namespace AstroBoy
             Routing.RegisterRoute(nameof(AdminOwnerStoresPage), typeof(AdminOwnerStoresPage));
             Routing.RegisterRoute(nameof(AdminStoreItemsPage), typeof(AdminStoreItemsPage));
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
-            Routing.RegisterRoute("LoginPage", typeof(LoginPage));
 
         }
 
@@ -22,7 +21,7 @@ namespace AstroBoy
 
             if (!confirm) return;
 
-            Routing.RegisterRoute("LoginPage", typeof(LoginPage));
+            Application.Current.MainPage = new NavigationPage(new LoginPage());
         }
     }
 }
