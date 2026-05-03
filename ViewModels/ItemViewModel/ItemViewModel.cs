@@ -17,7 +17,7 @@ public class ItemViewModel
     public ImageSource ImageSource =>
         ImageSource.FromStream(() =>
         {
-            var fileName = $"{Id}.jpg";
+            var fileName = $"items/{Id}.jpg";
 
             System.Diagnostics.Debug.WriteLine($"TRY LOAD: {fileName}");
 

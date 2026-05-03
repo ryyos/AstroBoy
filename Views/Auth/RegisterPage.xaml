@@ -6,24 +6,19 @@
 
     <Grid>
         <!-- Latar Belakang Biru Header -->
-        <VerticalStackLayout HeightRequest="220" VerticalOptions="Start">
-            <VerticalStackLayout.Background>
-                <LinearGradientBrush EndPoint="1,0">
-                    <GradientStop Color="#42c3ff" Offset="0.0" />
-                    <GradientStop Color="#1e8cf0" Offset="1.0" />
-                </LinearGradientBrush>
-            </VerticalStackLayout.Background>
+        <VerticalStackLayout HeightRequest="220" VerticalOptions="Start" BackgroundColor="#3d63ff">
 
-            <!-- Judul Header -->
-            <Label Text="ASTROBOY&#10;APP"
-                   TextColor="White"
-                   FontSize="20"
-                   FontAttributes="Bold"
-                   HorizontalTextAlignment="Center"
-                   Margin="0,50,0,0" />
+            <!-- Header Astro Boy -->
+            <VerticalStackLayout Spacing="0" HorizontalOptions="Center" Margin="0,50,0,0">
+                <Label Text="ASTROBOY"
+                       TextColor="White"
+                       FontSize="36"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
         </VerticalStackLayout>
 
-        <!-- Area Form Putih dengan Lengkungan di Atas -->
+        <!-- Area Form Putih -->
         <Border Margin="0, 150, 0, 0" BackgroundColor="White" StrokeThickness="0">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="30,30,0,0" />
@@ -32,63 +27,55 @@
             <ScrollView>
                 <VerticalStackLayout Padding="30" Spacing="15">
 
-                    <!-- Judul Form -->
                     <Label Text="REGISTER"
                            FontSize="24"
-                           TextColor="#1e8cf0"
+                           TextColor="#3d63ff"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"
                            Margin="0,10,0,20" />
 
                     <!-- Input Name -->
                     <VerticalStackLayout Spacing="0">
-                        <Label Text="Name" FontSize="11" TextColor="#42c3ff" />
-                        <Entry Placeholder="Name" Text="{Binding Name}" BackgroundColor="Transparent" TextColor="Black" />
-                        <BoxView HeightRequest="1" Color="#8bd5ff" Margin="0,5,0,0" />
-                    </VerticalStackLayout>
-
-                    <!-- Input Mobile Number (Opsional, diabaikan jika tidak ada binding Phone) -->
-                    <VerticalStackLayout Spacing="0">
-                        <Label Text="Mobile Number" FontSize="11" TextColor="#42c3ff" />
-                        <Entry Placeholder="8129*****" Keyboard="Telephone" BackgroundColor="Transparent" TextColor="Black" />
-                        <BoxView HeightRequest="1" Color="#8bd5ff" Margin="0,5,0,0" />
+                        <Label Text="Name" FontSize="11" TextColor="#3d63ff" />
+                        <Entry Placeholder="Name"
+                               Text="{Binding name}"
+                               BackgroundColor="Transparent"
+                               TextColor="Black" />
                     </VerticalStackLayout>
 
                     <!-- Input Email -->
                     <VerticalStackLayout Spacing="0">
-                        <Label Text="Email" FontSize="11" TextColor="#42c3ff" />
-                        <Entry Placeholder="example@email.com" Text="{Binding _Email}" Keyboard="Email" BackgroundColor="Transparent" TextColor="Black" />
-                        <BoxView HeightRequest="1" Color="#8bd5ff" Margin="0,5,0,0" />
+                        <Label Text="Email" FontSize="11" TextColor="#3d63ff" />
+                        <Entry Placeholder="example@email.com"
+                               Text="{Binding email}"
+                               Keyboard="Email"
+                               BackgroundColor="Transparent"
+                               TextColor="Black" />
                     </VerticalStackLayout>
 
                     <!-- Input Password -->
                     <VerticalStackLayout Spacing="0">
-                        <Label Text="Password" FontSize="11" TextColor="#42c3ff" />
+                        <Label Text="Password" FontSize="11" TextColor="#3d63ff" />
                         <Grid>
-                            <Entry Placeholder="********" IsPassword="True" Text="{Binding Password}" BackgroundColor="Transparent" TextColor="Black" />
+                            <Entry Placeholder="********"
+                                   IsPassword="True"
+                                   Text="{Binding password}"
+                                   BackgroundColor="Transparent"
+                                   TextColor="Black" />
                             <Label Text="?" TextColor="#A1A1A1" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,5,0" />
                         </Grid>
-                        <BoxView HeightRequest="1" Color="#8bd5ff" Margin="0,5,0,0" />
                     </VerticalStackLayout>
 
+                    <!-- Pilihan Role -->
                     <VerticalStackLayout Spacing="0" Margin="0,10,0,0">
-                        <Label Text="Select Role" FontSize="11" TextColor="#42c3ff" />
-
-                        <!-- Ganti 'Role' dengan nama variabel role di RegisterViewModel asli kamu -->
-                        <Picker Title="Select your role"
+                        <Label Text="Select Role" FontSize="11" TextColor="#3d63ff" />
+                        <Picker Title="Pilih Role"
                                 TitleColor="#A1A1A1"
                                 TextColor="Black"
                                 BackgroundColor="Transparent"
-                                SelectedItem="{Binding Role}">
-                            <Picker.ItemsSource>
-                                <x:Array Type="{x:Type x:String}">
-                                    <x:String>User</x:String>
-                                    <x:String>Admin</x:String>
-                                </x:Array>
-                            </Picker.ItemsSource>
-                        </Picker>
-
-                        <BoxView HeightRequest="1" Color="#8bd5ff" Margin="0,5,0,0" />
+                                ItemsSource="{Binding Roles}"
+                                SelectedItem="{Binding Role}"
+                                />
                     </VerticalStackLayout>
 
                     <!-- Pesan Error -->
@@ -98,19 +85,14 @@
                     <Button Text="SIGNUP"
                             Command="{Binding RegisterCommand}"
                             TextColor="White"
+                            BackgroundColor="#3d63ff"
                             CornerRadius="25"
                             HeightRequest="50"
                             FontAttributes="Bold"
                             Margin="0,20,0,0"
                             WidthRequest="200"
-                            HorizontalOptions="Center">
-                        <Button.Background>
-                            <LinearGradientBrush EndPoint="1,0">
-                                <GradientStop Color="#42c3ff" Offset="0.0" />
-                                <GradientStop Color="#1e8cf0" Offset="1.0" />
-                            </LinearGradientBrush>
-                        </Button.Background>
-                    </Button>
+                            HorizontalOptions="Center" />
+
                 </VerticalStackLayout>
             </ScrollView>
         </Border>

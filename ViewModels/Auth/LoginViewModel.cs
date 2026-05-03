@@ -65,10 +65,8 @@ public class LoginViewModel : BaseViewModel
         }
         else if (user is CustomerModel)
         {
-            // Simpan sesi user aktif sebelum pindah halaman
             SessionUser.Set(user);
 
-            // Arahkan ke Shell khusus Customer
             Application.Current!.Windows[0].Page = new CustomerAppShell();
         }
     }

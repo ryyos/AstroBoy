@@ -1,43 +1,94 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="AstroBoy.Views.Auth.LoginPage">
+             x:Class="AstroBoy.Views.Auth.LoginPage"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+    <Grid>
+        <!-- Latar Belakang Biru Header -->
+        <VerticalStackLayout HeightRequest="280" VerticalOptions="Start" BackgroundColor="#3d63ff">
 
-            <Label Text="AstroBoy Login"
-                   FontSize="24"
-                   FontAttributes="Bold" />
-
-            <Entry Placeholder="Email"
-                   Text="{Binding _Email}" />
-
-            <Entry Placeholder="Password"
-                   Text="{Binding Password}" />
-
-            <Button Text="Login"
-                    Command="{Binding LoginCommand}" />
-
-            <Label Text="{Binding ErrorMessage}"
-                   TextColor="Red"
-                   FontSize="12"/>
-
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
-
-                <Label Text="Belum punya akun?" FontSize="12"/>
-
-                <Label Text="Register"
-                       TextColor="Blue"
+            <!-- Header Kece Astro Boy -->
+            <VerticalStackLayout Spacing="0" HorizontalOptions="Center" Margin="0,70,0,0">
+                <Label Text="ASTROBOY"
+                       TextColor="White"
+                       FontSize="42"
                        FontAttributes="Bold"
-                       FontSize="12">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding GoToRegisterCommand}" />
-                    </Label.GestureRecognizers>
-                </Label>
-
-            </HorizontalStackLayout>
-
+                       HorizontalTextAlignment="Center"
+                       CharacterSpacing="2" />
+                <BoxView WidthRequest="40"
+                         HeightRequest="3"
+                         Color="White"
+                         HorizontalOptions="Center"
+                         Margin="0,10,0,0" />
+            </VerticalStackLayout>
         </VerticalStackLayout>
-    </ScrollView>
 
+        <!-- Area Form Putih -->
+        <Border Margin="0, 180, 0, 0" BackgroundColor="White" StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="30,30,0,0" />
+            </Border.StrokeShape>
+
+            <ScrollView>
+                <VerticalStackLayout Padding="30" Spacing="15">
+
+                    <Label Text="LOGIN"
+                           FontSize="24"
+                           TextColor="#3d63ff"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           Margin="0,20,0,20" />
+
+                    <!-- Input Email/Username -->
+                    <VerticalStackLayout Spacing="0">
+                        <Label Text="Email" FontSize="11" TextColor="#3d63ff" />
+                        <Entry Placeholder="example@email.com"
+                               Text="{Binding _Email}"
+                               Keyboard="Email"
+                               BackgroundColor="Transparent"
+                               TextColor="Black" />
+                    </VerticalStackLayout>
+
+                    <!-- Input Password -->
+                    <VerticalStackLayout Spacing="0" Margin="0,10,0,0">
+                        <Label Text="Password" FontSize="11" TextColor="#3d63ff" />
+                        <Grid>
+                            <Entry Placeholder="********"
+                                   IsPassword="True"
+                                   Text="{Binding Password}"
+                                   BackgroundColor="Transparent"
+                                   TextColor="Black" />
+                            <Label Text="?" TextColor="#A1A1A1" HorizontalOptions="End" VerticalOptions="Center" Margin="0,0,5,0" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <Label Text="{Binding ErrorMessage}" TextColor="Red" FontSize="12" HorizontalOptions="Center"/>
+
+                    <!-- Tombol Login -->
+                    <Button Text="LOGIN"
+                            Command="{Binding LoginCommand}"
+                            TextColor="White"
+                            BackgroundColor="#3d63ff"
+                            CornerRadius="25"
+                            HeightRequest="50"
+                            FontAttributes="Bold"
+                            Margin="0,30,0,0"
+                            WidthRequest="200"
+                            HorizontalOptions="Center" />
+
+                    <!-- Link ke Register -->
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,20,0,0">
+                        <Label Text="Don't have an account?" FontSize="10" TextColor="#3d63ff"/>
+                        <Label Text="Sign Up" TextColor="#3d63ff" FontAttributes="Bold" FontSize="10">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GoToRegisterCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+    </Grid>
 </ContentPage>

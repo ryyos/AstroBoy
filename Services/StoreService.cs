@@ -7,6 +7,8 @@ public class StoreService
 {
     private DatabaseContext db;
     private static List<Store>? _stores;
+    public int GetTotalStores() => _stores!.Count;
+    public List<Store> GetAllStores() => _stores!.ToList();
 
     public StoreService()
     {
@@ -14,17 +16,12 @@ public class StoreService
         _stores = db.GetAllStores();
     }
 
-    public int GetTotalStores() => _stores!.Count;
-
-    public List<Store> GetAllStores() => _stores!.ToList();
-
     public List<Store> GetStoresByOwner(string ownerId)
         => _stores!.Where(s => s.OwnerId == ownerId).ToList();
 
     public Store? GetStoreById(string storeId)
         => _stores!.FirstOrDefault(s => s.StoreId == storeId);
 
-    // Reload items langsung dari DB (dipakai setelah form add/edit item)
     public List<Item> GetFreshItemsByStoreId(string storeId)
     {
         var freshItems = db.GetItemsForStore(storeId);
