@@ -474,6 +474,17 @@ namespace Database
             return items;
         }
 
+        // ── Update user balance in DB ─────────────────────────────────────────
+        public void UpdateUserBalance(string userId, decimal newBalance)
+        {
+            using var connection = GetConnection();
+            connection.Open();
+            var cmd = new SqliteCommand("UPDATE users SET balance = @balance WHERE id = @id", connection);
+            cmd.Parameters.AddWithValue("@balance", newBalance);
+            cmd.Parameters.AddWithValue("@id", userId);
+            cmd.ExecuteNonQuery();
+        }
+
         // ── Get Items for Store (public) ─────────────────────────────────────
         public List<Item> GetItemsForStore(string storeId)
         {

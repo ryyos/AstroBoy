@@ -7,7 +7,14 @@ public partial class ProfilePage : ContentPage
 	public ProfilePage()
 	{
 		InitializeComponent();
-		// Semua logic ada di ViewModel — sesuai pola MVVM
 		BindingContext = new ProfileViewModel();
+	}
+
+	// auto rfresh balance 
+	protected override void OnAppearing()
+	{
+		base.OnAppearing();
+		if (BindingContext is ProfileViewModel vm)
+			vm.RefreshBalance();
 	}
 }

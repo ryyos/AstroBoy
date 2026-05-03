@@ -86,20 +86,71 @@ public class CartViewModel : BaseViewModel
 
     public bool IsEmpty => !HasItems;
 
+    // ── Checkout Overlay state ────────────────────────────────────────────────
+    private bool _isCheckoutOverlayVisible;
+    public bool IsCheckoutOverlayVisible
+    {
+        get => _isCheckoutOverlayVisible;
+        set { _isCheckoutOverlayVisible = value; OnPropertyChanged(); }
+    }
+
+    public decimal CurrentBalance => SessionUser.Current?.Balance ?? 0;
+    public string CurrentBalanceFormatted => $"Rp {CurrentBalance:N0}";
+    public bool IsSaldoCukup => CurrentBalance >= Total;
+    public bool IsNotSaldoCukup => !IsSaldoCukup;
+    public string SisaSaldoFormatted => $"Rp {CurrentBalance - Total:N0}";
+    public string KuranganFormatted => $"Rp {Total - CurrentBalance:N0}";
+
+    // ── Toast state ───────────────────────────────────────────────────────────
+    private bool _isToastVisible;
+    public bool IsToastVisible
+    {
+        get => _isToastVisible;
+        set { _isToastVisible = value; OnPropertyChanged(); }
+    }
+
+    private string _toastMessage = string.Empty;
+    public string ToastMessage
+    {
+        get => _toastMessage;
+        set { _toastMessage = value; OnPropertyChanged(); }
+    }
+
     // ── Commands ──────────────────────────────────────────────────────────────
     public ICommand IncrementCommand { get; }
     public ICommand DecrementCommand { get; }
     public ICommand RemoveCommand { get; }
     public ICommand CheckoutCommand { get; }
+    public ICommand HideCheckoutOverlayCommand { get; }
+    public ICommand ConfirmCheckoutCommand { get; }
 
     public CartViewModel()
     {
         IncrementCommand = new Command<CartItemViewModel>(Increment);
         DecrementCommand = new Command<CartItemViewModel>(Decrement);
         RemoveCommand = new Command<CartItemViewModel>(Remove);
-        CheckoutCommand = new Command(async () => await Checkout());
+
+        CheckoutCommand = new Command(() =>
+        {
+            if (!HasItems) return;
+            RefreshCheckoutInfo();
+            IsCheckoutOverlayVisible = true;
+        });
+
+        HideCheckoutOverlayCommand = new Command(() => IsCheckoutOverlayVisible = false);
+        ConfirmCheckoutCommand = new Command(async () => await ProcessCheckout());
 
         LoadFromBag();
+    }
+
+    private void RefreshCheckoutInfo()
+    {
+        OnPropertyChanged(nameof(CurrentBalance));
+        OnPropertyChanged(nameof(CurrentBalanceFormatted));
+        OnPropertyChanged(nameof(IsSaldoCukup));
+        OnPropertyChanged(nameof(IsNotSaldoCukup));
+        OnPropertyChanged(nameof(SisaSaldoFormatted));
+        OnPropertyChanged(nameof(KuranganFormatted));
     }
 
     // ── Load data dari CartBag ────────────────────────────────────────────────
@@ -149,32 +200,23 @@ public class CartViewModel : BaseViewModel
         HasItems = CartItems.Count > 0;
     }
 
-    // ── Checkout ──────────────────────────────────────────────────────────────
-    private async Task Checkout()
+    // ── Process Checkout ─────────────────────────────────────────────────────
+    private async Task ProcessCheckout()
     {
-        if (!HasItems) return;
+        if (!IsSaldoCukup) return;
 
-        bool confirmed = await Shell.Current.DisplayAlertAsync(
-            "Konfirmasi Pesanan",
-            $"Total: {TotalFormatted}\nLanjutkan pesanan ini?",
-            "Ya, Checkout",
-            "Batal");
-
-        if (!confirmed) return;
+        IsCheckoutOverlayVisible = false;
 
         var db = new DatabaseContext();
         var customerId = SessionUser.Current?.Id ?? string.Empty;
         var now = DateTime.Now.ToString("o");
 
-        // Kelompokkan item per toko → satu order per toko
         var grouped = CartBag.Items.GroupBy(i => i.StoreId);
 
         foreach (var group in grouped)
         {
             var orderId = Guid.NewGuid().ToString();
-            var storeId = group.Key;
-
-            db.InsertOrder(orderId, customerId, storeId, "Pending", now);
+            db.InsertOrder(orderId, customerId, group.Key, "Completed", now);
 
             foreach (var entry in group)
             {
@@ -187,15 +229,19 @@ public class CartViewModel : BaseViewModel
             }
         }
 
+        var newBalance = CurrentBalance - Total;
+        db.UpdateUserBalance(customerId, newBalance);
+        SessionUser.Current!.Balance = newBalance;
+
         CartBag.Clear();
         CartItems.Clear();
         RecalcTotal();
         HasItems = false;
 
-        await Shell.Current.DisplayAlertAsync(
-            "Pesanan Berhasil",
-            "Terima kasih! Pesanan Anda sedang diproses.",
-            "OK");
+        ToastMessage = "Pesanan berhasil!.";
+        IsToastVisible = true;
+        await Task.Delay(2000);
+        IsToastVisible = false;
 
         await Shell.Current.GoToAsync("..");
     }
