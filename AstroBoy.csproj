@@ -59,7 +59,10 @@
 		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
 		<!-- Item images as raw assets (filenames start with digits, not valid MauiImage names) -->
-		<MauiAsset Include="Resources\Images\items\*" LogicalName="items/%(Filename)%(Extension)" />
+			<MauiAsset Include="Resources\Images\items\*.jpg">
+				<LogicalName>%(Filename)%(Extension)</LogicalName>
+			</MauiAsset>
+		
 		
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />

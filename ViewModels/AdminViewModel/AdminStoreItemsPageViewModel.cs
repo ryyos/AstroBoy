@@ -17,7 +17,7 @@ namespace AstroBoy.ViewModels.AdminViewModel
     {
         private readonly ItemService _itemService;
 
-        public ObservableCollection<Item> Items { get; set; } = new();
+        public ObservableCollection<ItemViewModel> Items { get; set; } = new();
 
         public AdminStoreItemsPageViewModel()
         {
@@ -41,8 +41,9 @@ namespace AstroBoy.ViewModels.AdminViewModel
                                    .Where(i => i.StoreId == StoreId);
 
             Items.Clear();
+
             foreach (var item in data)
-                Items.Add(item);
+                Items.Add(new ItemViewModel(item));
         }
     }
 }

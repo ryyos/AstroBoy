@@ -4,15 +4,48 @@
             x:Class="AstroBoy.Views.VAdmin.AdminStoreItemsPage"
             x:Name="ThisPage">
 
-    <CollectionView ItemsSource="{Binding Items}">
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <VerticalStackLayout Padding="10">
-                    <Label Text="{Binding Name}" FontSize="16"/>
-                    <Label Text="{Binding Price}" FontSize="12"/>
-                </VerticalStackLayout>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
+        <CollectionView ItemsSource="{Binding Items}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <Frame 
+                        CornerRadius="16"
+                        Padding="0"
+                        Margin="10"
+                        HasShadow="True"
+                        BackgroundColor="White">
+
+                        <VerticalStackLayout Spacing="0">
+
+                            <!-- IMAGE -->
+                            <Image 
+                                Source="{Binding ImageSource}"
+                                HeightRequest="140"
+                                Aspect="AspectFill" />
+
+                            <!-- CONTENT -->
+                            <VerticalStackLayout Padding="12" Spacing="6">
+
+                                <Label 
+                                    Text="{Binding Name}" 
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="Black"
+                                    LineBreakMode="TailTruncation"
+                                    MaxLines="2"/>
+
+                                <Label 
+                                    Text="{Binding Price, StringFormat='Rp {0:N0}'}"
+                                    FontSize="14"
+                                    TextColor="#6B4EFF"/>
+
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Frame>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
 </ContentPage>

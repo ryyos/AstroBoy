@@ -142,7 +142,7 @@
                 BackgroundColor="#3D63FF"
                 TextColor="White"
                 FontSize="24"
-                Command="{Binding AddCustomerCommand}"
+                Clicked="OnAddCustomerClicked"
                 HorizontalOptions="End"
                 VerticalOptions="End"
                 Margin="20">
