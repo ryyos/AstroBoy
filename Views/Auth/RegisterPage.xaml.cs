@@ -5,6 +5,6 @@ public partial class RegisterPage : ContentPage
     public RegisterPage()
     {
         InitializeComponent();
-        BindingContext = new RegisterViewModel();
+        BindingContext = new RegisterViewModel(); // Menghubungkan ke logic asli
     }
 }
