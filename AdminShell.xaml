@@ -4,22 +4,38 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:AstroBoy.Views.VAdmin">
 
-    <FlyoutItem Title="Dashboard">
-        <ShellContent
-            Title="Dashboard"
-            ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
+    <Shell.FlyoutHeader>
+        <Grid Padding="20" RowDefinitions="Auto,Auto" BackgroundColor="#f5f5f5">
+            
+            <Border
+                WidthRequest="60"
+                HeightRequest="60"
+                BackgroundColor="Black"
+                HorizontalOptions="Center"
+                StrokeShape="RoundRectangle 30">
+
+                <Label 
+                    Text="A"
+                    TextColor="White"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"/>
+
+            </Border>
+
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Main">
+        <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:AdminDashboardPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Customers">
-        <ShellContent
-            Title="Manage Customers"
-            ContentTemplate="{DataTemplate views:AdminCustomerPage}" />
+    <FlyoutItem Title="Management">
+        <ShellContent Title="Customers" ContentTemplate="{DataTemplate views:AdminCustomerPage}" />
+        <ShellContent Title="Owners" ContentTemplate="{DataTemplate views:AdminOwnerList}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Owners">
-        <ShellContent 
-        Title="Owner List"
-        ContentTemplate="{DataTemplate views:AdminOwnerList}" />
-    </FlyoutItem>
+    <MenuItem 
+        Text="Logout"
+        Clicked="OnLogoutClicked" />
 
 </Shell>

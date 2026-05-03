@@ -21,12 +21,7 @@ public partial class AdminCustomerPage : ContentPage
 
         if (BindingContext is AdminCustomerViewModel vm)
         {
-            Console.WriteLine("masuk ke if dan load");
             vm.LoadCustomers();
-        }
-        else
-        {
-            Console.WriteLine("tidak masuk ke if dan load");
         }
     }
 }

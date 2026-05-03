@@ -53,8 +53,5 @@ namespace AstroBoy.ViewModels.AdminViewModel
         {
             await Shell.Current.GoToAsync($"EditCustomerPage?Id={customer.Id}");
         }
-
-
-
     }
 }

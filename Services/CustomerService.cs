@@ -33,21 +33,17 @@ namespace AstroBoy.Services
 
         public void Delete(string id)
         {
+            db.DeleteUser(id);
         }
 
         public Customer GetById(string id)
         {
-            return new Customer(
-                    name: "Emma myers",
-                    email: "emma@gmail.com",
-                    password: "emma123",
-                    role: "admin"
-                );
+            return db.GetUsersById(id);
         }
 
         public void Update(Customer customer)
         {
-
+            db.UpdateCustomer(customer);
         }
     }
 

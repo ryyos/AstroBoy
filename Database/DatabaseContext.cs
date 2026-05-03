@@ -145,7 +145,56 @@ namespace Database
             return null;
         }
 
-        public List<string> GetUsers()
+        public Customer GetUsersById(string id)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                var query = "SELECT * FROM users WHERE id = @id";
+                var command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@id", id);
+
+                var reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    return new Customer
+                    (
+                        id: reader["id"].ToString()!,
+                        name: reader["name"].ToString()!,
+                        email: reader["email"].ToString()!,
+                        password: reader["password"].ToString()!,
+                        role: reader["role"].ToString()!
+                    );
+                }
+            }
+
+            return null;
+        }
+
+        public void UpdateCustomer(Customer customer)
+        {
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                var query = @"UPDATE users 
+                      SET name = @name,
+                          email = @email
+                      WHERE id = @id";
+
+                var command = new SqliteCommand(query, connection);
+
+                command.Parameters.AddWithValue("@id", customer.Id);
+                command.Parameters.AddWithValue("@name", customer.Name);
+                command.Parameters.AddWithValue("@email", customer.Email);
+
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public List<string> GetAllUsers()
         {
             var users = new List<string>();
 
@@ -237,7 +286,7 @@ namespace Database
         }
 
         // 🔹 Delete User
-        public void DeleteUser(int id)
+        public void DeleteUser(string id)
         {
             using (var connection = GetConnection())
             {
